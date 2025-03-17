@@ -27,6 +27,12 @@ function Navbar() {
 }
 
 function SearchBar({ filters, setFilters, onSearch }) {
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      onSearch();
+    }
+  };
+
   return (
     <div className="bg-white p-4 shadow-lg rounded-lg border border-gray-200 w-full max-w-5xl mx-auto mt-6 flex items-center gap-4">
       <input
@@ -35,12 +41,14 @@ function SearchBar({ filters, setFilters, onSearch }) {
         className="p-3 border border-gray-300 rounded-lg w-1/4 shadow-sm focus:ring-2 focus:ring-blue-500"
         value={filters.team}
         onChange={(e) => setFilters({ ...filters, team: e.target.value })}
+        onKeyDown={handleKeyDown}
       />
       <input
         type="date"
         className="p-3 border border-gray-300 rounded-lg w-1/4 shadow-sm focus:ring-2 focus:ring-blue-500"
         value={filters.date}
         onChange={(e) => setFilters({ ...filters, date: e.target.value })}
+        onKeyDown={handleKeyDown}
       />
       <input
         type="text"
@@ -48,6 +56,7 @@ function SearchBar({ filters, setFilters, onSearch }) {
         className="p-3 border border-gray-300 rounded-lg w-1/4 shadow-sm focus:ring-2 focus:ring-blue-500"
         value={filters.location}
         onChange={(e) => setFilters({ ...filters, location: e.target.value })}
+        onKeyDown={handleKeyDown}
       />
       <button onClick={onSearch} className="bg-blue-600 text-white p-3 rounded-lg w-1/6 font-semibold shadow-md hover:bg-blue-700 transition duration-200">
         Search
