@@ -26,15 +26,15 @@ const mockEvents = [
 
 function Navbar() {
   return (
-    <nav className="bg-red-500 p-6 shadow-md flex justify-center border-b">
-      <img src="/logo.png" alt="SeatSearchPro Logo" className="h-14" />
+    <nav className="bg-white p-6 shadow-md flex items-center border-b">
+      <img src="/logo.png" alt="SeatSearchPro Logo" className="h-16 ml-4" />
     </nav>
   );
 }
 
 function SearchBar({ filters, setFilters }) {
   return (
-    <div className="bg-white p-6 shadow-md rounded-lg flex flex-wrap justify-center gap-4 border border-gray-200 w-full max-w-5xl mx-auto mt-6">
+    <div className="bg-white p-6 shadow-lg rounded-lg flex flex-wrap justify-center gap-4 border border-gray-200 w-full max-w-4xl mx-auto mt-6">
       <input
         type="text"
         placeholder="Search by team..."
