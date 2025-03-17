@@ -1,14 +1,5 @@
 import { useState } from "react";
 
-const mockTeams = [
-  { id: 1, name: "Los Angeles Lakers", league: "NBA" },
-  { id: 2, name: "Los Angeles Clippers", league: "NBA" },
-  { id: 3, name: "Los Angeles Rams", league: "NFL" },
-  { id: 4, name: "Los Angeles Chargers", league: "NFL" },
-  { id: 5, name: "Los Angeles Dodgers", league: "MLB" },
-  { id: 6, name: "Los Angeles Angels", league: "MLB" },
-];
-
 const mockGames = [
   { id: 1, teams: ["Los Angeles Lakers", "Golden State Warriors"], date: "2025-03-25", location: "Crypto.com Arena, Los Angeles, CA", league: "NBA", prices: [120, 110, 130] },
   { id: 2, teams: ["Los Angeles Rams", "San Francisco 49ers"], date: "2025-10-12", location: "SoFi Stadium, Los Angeles, CA", league: "NFL", prices: [200, 180, 220] },
@@ -65,10 +56,13 @@ function SearchBar({ filters, setFilters, onSearch }) {
   );
 }
 
-function EventCard({ event }) {
+function EventCard({ event, onSelect }) {
   const lowestPrice = event.prices && event.prices.length > 0 ? Math.min(...event.prices) : null;
   return (
-    <div className="bg-white shadow-lg p-6 rounded-xl border border-gray-300 flex flex-col space-y-4 hover:shadow-2xl transition duration-300 transform hover:-translate-y-2">
+    <div 
+      className="bg-white shadow-lg p-6 rounded-xl border border-gray-300 flex flex-col space-y-4 hover:shadow-2xl transition duration-300 transform hover:-translate-y-2 cursor-pointer"
+      onClick={() => onSelect(event)}
+    >
       <h2 className="text-xl font-bold text-gray-900">{event.teams.join(" vs. ")}</h2>
       <p className="text-gray-600 text-md">📅 {event.date} | 📍 {event.location}</p>
       {lowestPrice !== null && (
@@ -78,9 +72,28 @@ function EventCard({ event }) {
   );
 }
 
+function EventDetails({ event, onBack }) {
+  return (
+    <div className="bg-white p-6 shadow-lg rounded-lg max-w-3xl mx-auto mt-10">
+      <button className="text-blue-600 font-semibold mb-4" onClick={onBack}>&larr; Back to Events</button>
+      <h2 className="text-2xl font-bold">{event.teams.join(" vs. ")}</h2>
+      <p className="text-gray-600">📅 {event.date} | 📍 {event.location}</p>
+      <h3 className="text-lg font-semibold mt-4">Available Tickets:</h3>
+      <ul className="mt-2 space-y-2">
+        {event.prices.map((price, index) => (
+          <li key={index} className="text-blue-600 font-medium bg-gray-100 p-2 rounded-md shadow-sm">
+            ${price} per ticket
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function Homepage() {
   const [filters, setFilters] = useState({ team: "", date: "", location: "" });
   const [filteredEvents, setFilteredEvents] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   function handleSearch() {
     console.log("Search initiated with filters:", filters);
@@ -97,16 +110,22 @@ export default function Homepage() {
     <div className="bg-gray-100 min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4">
-        <SearchBar filters={filters} setFilters={setFilters} onSearch={handleSearch} />
-        <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-10 pb-20">
-          {filteredEvents.length > 0 ? (
-            filteredEvents.map(event => (
-              <EventCard key={event.id} event={event} />
-            ))
-          ) : (
-            <p className="text-gray-600 text-center col-span-full">No events found. Please search for a team or location.</p>
-          )}
-        </div>
+        {!selectedEvent ? (
+          <>
+            <SearchBar filters={filters} setFilters={setFilters} onSearch={handleSearch} />
+            <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-10 pb-20">
+              {filteredEvents.length > 0 ? (
+                filteredEvents.map(event => (
+                  <EventCard key={event.id} event={event} onSelect={setSelectedEvent} />
+                ))
+              ) : (
+                <p className="text-gray-600 text-center col-span-full">No events found. Please search for a team or location.</p>
+              )}
+            </div>
+          </>
+        ) : (
+          <EventDetails event={selectedEvent} onBack={() => setSelectedEvent(null)} />
+        )}
       </div>
     </div>
   );
