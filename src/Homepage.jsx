@@ -34,24 +34,24 @@ function Navbar() {
 
 function SearchBar({ filters, setFilters }) {
   return (
-    <div className="bg-white p-6 shadow-lg rounded-lg flex flex-wrap justify-center gap-4 border border-gray-200 w-full max-w-4xl mx-auto mt-6">
+    <div className="bg-white p-6 shadow-lg rounded-lg border border-gray-200 w-full max-w-4xl mx-auto mt-6 flex items-center gap-4">
       <input
         type="text"
         placeholder="Search by team..."
-        className="p-3 border border-gray-300 rounded-lg w-full md:w-64 shadow-sm focus:ring-2 focus:ring-blue-500"
+        className="p-3 border border-gray-300 rounded-lg flex-1 shadow-sm focus:ring-2 focus:ring-blue-500"
         value={filters.team}
         onChange={(e) => setFilters({ ...filters, team: e.target.value })}
       />
       <input
         type="date"
-        className="p-3 border border-gray-300 rounded-lg w-full md:w-48 shadow-sm focus:ring-2 focus:ring-blue-500"
+        className="p-3 border border-gray-300 rounded-lg flex-1 shadow-sm focus:ring-2 focus:ring-blue-500"
         value={filters.date}
         onChange={(e) => setFilters({ ...filters, date: e.target.value })}
       />
       <input
         type="text"
         placeholder="Search by location..."
-        className="p-3 border border-gray-300 rounded-lg w-full md:w-64 shadow-sm focus:ring-2 focus:ring-blue-500"
+        className="p-3 border border-gray-300 rounded-lg flex-1 shadow-sm focus:ring-2 focus:ring-blue-500"
         value={filters.location}
         onChange={(e) => setFilters({ ...filters, location: e.target.value })}
       />
