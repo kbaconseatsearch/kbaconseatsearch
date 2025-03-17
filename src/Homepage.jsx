@@ -98,7 +98,7 @@ export default function Homepage() {
       <Navbar />
       <div className="container mx-auto px-4">
         <SearchBar filters={filters} setFilters={setFilters} onSearch={handleSearch} />
-        <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-10">
+        <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-10 pb-20">
           {filteredEvents.length > 0 ? (
             filteredEvents.map(event => (
               <EventCard key={event.id} event={event} />
