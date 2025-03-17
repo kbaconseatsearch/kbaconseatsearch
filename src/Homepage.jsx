@@ -26,7 +26,7 @@ const mockEvents = [
 
 function Navbar() {
   return (
-    <nav className="bg-white p-4 shadow-md flex justify-center border-b">
+    <nav className="bg-red-500 p-6 shadow-md flex justify-center border-b">
       <img src="/logo.png" alt="SeatSearchPro Logo" className="h-14" />
     </nav>
   );
@@ -34,24 +34,24 @@ function Navbar() {
 
 function SearchBar({ filters, setFilters }) {
   return (
-    <div className="p-6 bg-white shadow-md rounded-lg flex flex-wrap justify-center gap-4 border border-gray-200">
+    <div className="bg-white p-6 shadow-md rounded-lg flex flex-wrap justify-center gap-4 border border-gray-200 w-full max-w-5xl mx-auto mt-6">
       <input
         type="text"
         placeholder="Search by team..."
-        className="p-3 border border-gray-300 rounded-lg w-64 shadow-sm"
+        className="p-3 border border-gray-300 rounded-lg w-full md:w-64 shadow-sm focus:ring-2 focus:ring-blue-500"
         value={filters.team}
         onChange={(e) => setFilters({ ...filters, team: e.target.value })}
       />
       <input
         type="date"
-        className="p-3 border border-gray-300 rounded-lg w-48 shadow-sm"
+        className="p-3 border border-gray-300 rounded-lg w-full md:w-48 shadow-sm focus:ring-2 focus:ring-blue-500"
         value={filters.date}
         onChange={(e) => setFilters({ ...filters, date: e.target.value })}
       />
       <input
         type="text"
         placeholder="Search by location..."
-        className="p-3 border border-gray-300 rounded-lg w-64 shadow-sm"
+        className="p-3 border border-gray-300 rounded-lg w-full md:w-64 shadow-sm focus:ring-2 focus:ring-blue-500"
         value={filters.location}
         onChange={(e) => setFilters({ ...filters, location: e.target.value })}
       />
@@ -61,14 +61,16 @@ function SearchBar({ filters, setFilters }) {
 
 function EventCard({ event }) {
   return (
-    <div className="bg-white shadow-lg p-6 rounded-lg border border-gray-300 flex flex-col space-y-4">
+    <div className="bg-white shadow-lg p-6 rounded-xl border border-gray-300 flex flex-col space-y-4 hover:shadow-2xl transition duration-300 transform hover:-translate-y-2">
       <h2 className="text-xl font-bold text-gray-900">{event.name}</h2>
-      <p className="text-gray-700 text-md">📅 {event.date} | 📍 {event.location}</p>
+      <p className="text-gray-600 text-md">📅 {event.date} | 📍 {event.location}</p>
       <div className="w-full border-t pt-4">
         <h3 className="text-lg font-semibold text-gray-800">Available Tickets:</h3>
         <ul className="mt-2 space-y-2">
           {event.prices.map((price, index) => (
-            <li key={index} className="text-blue-600 font-medium bg-gray-100 p-2 rounded-md shadow-sm">{price}</li>
+            <li key={index} className="text-blue-600 font-medium bg-gray-100 p-2 rounded-md shadow-sm">
+              {price}
+            </li>
           ))}
         </ul>
       </div>
@@ -88,17 +90,17 @@ export default function Homepage() {
   return (
     <div className="bg-gray-100 min-h-screen">
       <Navbar />
-      <div className="flex justify-center mt-8">
+      <div className="container mx-auto px-4">
         <SearchBar filters={filters} setFilters={setFilters} />
-      </div>
-      <div className="p-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredEvents.length > 0 ? (
-          filteredEvents.map(event => (
-            <EventCard key={event.id} event={event} />
-          ))
-        ) : (
-          <p className="text-gray-600 text-center col-span-full">No events match your search.</p>
-        )}
+        <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-10">
+          {filteredEvents.length > 0 ? (
+            filteredEvents.map(event => (
+              <EventCard key={event.id} event={event} />
+            ))
+          ) : (
+            <p className="text-gray-600 text-center col-span-full">No events match your search.</p>
+          )}
+        </div>
       </div>
     </div>
   );
