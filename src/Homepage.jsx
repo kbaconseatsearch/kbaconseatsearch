@@ -10,12 +10,12 @@ const mockTeams = [
 ];
 
 const mockGames = [
-  { id: 1, teams: ["Los Angeles Lakers", "Golden State Warriors"], date: "2025-03-25", location: "Crypto.com Arena, Los Angeles, CA", league: "NBA" },
-  { id: 2, teams: ["Los Angeles Rams", "San Francisco 49ers"], date: "2025-10-12", location: "SoFi Stadium, Los Angeles, CA", league: "NFL" },
-  { id: 3, teams: ["Los Angeles Dodgers", "San Diego Padres"], date: "2025-06-15", location: "Dodger Stadium, Los Angeles, CA", league: "MLB" },
-  { id: 4, teams: ["Los Angeles Clippers", "Phoenix Suns"], date: "2025-04-05", location: "Crypto.com Arena, Los Angeles, CA", league: "NBA" },
-  { id: 5, teams: ["Los Angeles Chargers", "Kansas City Chiefs"], date: "2025-11-20", location: "SoFi Stadium, Los Angeles, CA", league: "NFL" },
-  { id: 6, teams: ["Los Angeles Angels", "New York Yankees"], date: "2025-07-22", location: "Angel Stadium, Anaheim, CA", league: "MLB" },
+  { id: 1, teams: ["Los Angeles Lakers", "Golden State Warriors"], date: "2025-03-25", location: "Crypto.com Arena, Los Angeles, CA", league: "NBA", prices: [120, 110, 130] },
+  { id: 2, teams: ["Los Angeles Rams", "San Francisco 49ers"], date: "2025-10-12", location: "SoFi Stadium, Los Angeles, CA", league: "NFL", prices: [200, 180, 220] },
+  { id: 3, teams: ["Los Angeles Dodgers", "San Diego Padres"], date: "2025-06-15", location: "Dodger Stadium, Los Angeles, CA", league: "MLB", prices: [45, 50, 55] },
+  { id: 4, teams: ["Los Angeles Clippers", "Phoenix Suns"], date: "2025-04-05", location: "Crypto.com Arena, Los Angeles, CA", league: "NBA", prices: [90, 85, 100] },
+  { id: 5, teams: ["Los Angeles Chargers", "Kansas City Chiefs"], date: "2025-11-20", location: "SoFi Stadium, Los Angeles, CA", league: "NFL", prices: [150, 140, 160] },
+  { id: 6, teams: ["Los Angeles Angels", "New York Yankees"], date: "2025-07-22", location: "Angel Stadium, Anaheim, CA", league: "MLB", prices: [30, 35, 40] },
 ];
 
 function Navbar() {
@@ -66,10 +66,14 @@ function SearchBar({ filters, setFilters, onSearch }) {
 }
 
 function EventCard({ event }) {
+  const lowestPrice = event.prices && event.prices.length > 0 ? Math.min(...event.prices) : null;
   return (
     <div className="bg-white shadow-lg p-6 rounded-xl border border-gray-300 flex flex-col space-y-4 hover:shadow-2xl transition duration-300 transform hover:-translate-y-2">
       <h2 className="text-xl font-bold text-gray-900">{event.teams.join(" vs. ")}</h2>
       <p className="text-gray-600 text-md">📅 {event.date} | 📍 {event.location}</p>
+      {lowestPrice !== null && (
+        <p className="text-green-600 text-lg font-semibold">Tickets from ${lowestPrice}</p>
+      )}
     </div>
   );
 }
