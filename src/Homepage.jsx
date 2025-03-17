@@ -1,27 +1,21 @@
 import { useState } from "react";
 
-const mockEvents = [
-  {
-    id: 1,
-    name: "Los Angeles Lakers vs. Golden State Warriors",
-    date: "2025-03-25",
-    location: "Crypto.com Arena, Los Angeles, CA",
-    prices: ["$120 - Ticketmaster", "$110 - SeatGeek", "$130 - StubHub"],
-  },
-  {
-    id: 2,
-    name: "New York Yankees vs. Boston Red Sox",
-    date: "2025-04-10",
-    location: "Yankee Stadium, New York, NY",
-    prices: ["$75 - Ticketmaster", "$80 - StubHub", "$70 - SeatGeek"],
-  },
-  {
-    id: 3,
-    name: "Super Bowl LIX",
-    date: "2025-02-09",
-    location: "Caesars Superdome, New Orleans, LA",
-    prices: ["$5,000 - Ticketmaster", "$4,800 - StubHub", "$5,200 - SeatGeek"],
-  },
+const mockTeams = [
+  { id: 1, name: "Los Angeles Lakers", league: "NBA" },
+  { id: 2, name: "Los Angeles Clippers", league: "NBA" },
+  { id: 3, name: "Los Angeles Rams", league: "NFL" },
+  { id: 4, name: "Los Angeles Chargers", league: "NFL" },
+  { id: 5, name: "Los Angeles Dodgers", league: "MLB" },
+  { id: 6, name: "Los Angeles Angels", league: "MLB" },
+];
+
+const mockGames = [
+  { id: 1, teams: ["Los Angeles Lakers", "Golden State Warriors"], date: "2025-03-25", location: "Crypto.com Arena, Los Angeles, CA", league: "NBA" },
+  { id: 2, teams: ["Los Angeles Rams", "San Francisco 49ers"], date: "2025-10-12", location: "SoFi Stadium, Los Angeles, CA", league: "NFL" },
+  { id: 3, teams: ["Los Angeles Dodgers", "San Diego Padres"], date: "2025-06-15", location: "Dodger Stadium, Los Angeles, CA", league: "MLB" },
+  { id: 4, teams: ["Los Angeles Clippers", "Phoenix Suns"], date: "2025-04-05", location: "Crypto.com Arena, Los Angeles, CA", league: "NBA" },
+  { id: 5, teams: ["Los Angeles Chargers", "Kansas City Chiefs"], date: "2025-11-20", location: "SoFi Stadium, Los Angeles, CA", league: "NFL" },
+  { id: 6, teams: ["Los Angeles Angels", "New York Yankees"], date: "2025-07-22", location: "Angel Stadium, Anaheim, CA", league: "MLB" },
 ];
 
 function Navbar() {
@@ -32,7 +26,7 @@ function Navbar() {
   );
 }
 
-function SearchBar({ filters, setFilters }) {
+function SearchBar({ filters, setFilters, onSearch }) {
   return (
     <div className="bg-white p-4 shadow-lg rounded-lg border border-gray-200 w-full max-w-5xl mx-auto mt-6 flex items-center gap-4">
       <input
@@ -55,7 +49,7 @@ function SearchBar({ filters, setFilters }) {
         value={filters.location}
         onChange={(e) => setFilters({ ...filters, location: e.target.value })}
       />
-      <button className="bg-blue-600 text-white p-3 rounded-lg w-1/6 font-semibold shadow-md hover:bg-blue-700 transition duration-200">
+      <button onClick={onSearch} className="bg-blue-600 text-white p-3 rounded-lg w-1/6 font-semibold shadow-md hover:bg-blue-700 transition duration-200">
         Search
       </button>
     </div>
@@ -65,43 +59,39 @@ function SearchBar({ filters, setFilters }) {
 function EventCard({ event }) {
   return (
     <div className="bg-white shadow-lg p-6 rounded-xl border border-gray-300 flex flex-col space-y-4 hover:shadow-2xl transition duration-300 transform hover:-translate-y-2">
-      <h2 className="text-xl font-bold text-gray-900">{event.name}</h2>
+      <h2 className="text-xl font-bold text-gray-900">{event.teams.join(" vs. ")}</h2>
       <p className="text-gray-600 text-md">📅 {event.date} | 📍 {event.location}</p>
-      <div className="w-full border-t pt-4">
-        <h3 className="text-lg font-semibold text-gray-800">Available Tickets:</h3>
-        <ul className="mt-2 space-y-2">
-          {event.prices.map((price, index) => (
-            <li key={index} className="text-blue-600 font-medium bg-gray-100 p-2 rounded-md shadow-sm">
-              {price}
-            </li>
-          ))}
-        </ul>
-      </div>
     </div>
   );
 }
 
 export default function Homepage() {
   const [filters, setFilters] = useState({ team: "", date: "", location: "" });
+  const [filteredEvents, setFilteredEvents] = useState([]);
 
-  const filteredEvents = mockEvents.filter(event =>
-    (filters.team === "" || event.name.toLowerCase().includes(filters.team.toLowerCase())) &&
-    (filters.date === "" || event.date === filters.date) &&
-    (filters.location === "" || event.location.toLowerCase().includes(filters.location.toLowerCase()))
-  );
+  function handleSearch() {
+    console.log("Search initiated with filters:", filters);
+    const results = mockGames.filter(event =>
+      (filters.team === "" || event.teams.some(team => team.toLowerCase().includes(filters.team.toLowerCase()))) &&
+      (filters.location === "" || event.location.toLowerCase().includes(filters.location.toLowerCase())) &&
+      (filters.date === "" || event.date === filters.date)
+    );
+    console.log("Filtered Events:", results);
+    setFilteredEvents(results);
+  }
 
   return (
     <div className="bg-gray-100 min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4">
-        <SearchBar filters={filters} setFilters={setFilters} />
+        <SearchBar filters={filters} setFilters={setFilters} onSearch={handleSearch} />
         <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-10">
           {filteredEvents.length > 0 ? (
             filteredEvents.map(event => (
               <EventCard key={event.id} event={event} />
             ))
           ) : (
-            <p className="text-gray-600 text-center col-span-full">No events match your search.</p>
+            <p className="text-gray-600 text-center col-span-full">No events found. Please search for a team or location.</p>
           )}
         </div>
       </div>
