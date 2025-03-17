@@ -34,27 +34,30 @@ function Navbar() {
 
 function SearchBar({ filters, setFilters }) {
   return (
-    <div className="bg-white p-6 shadow-lg rounded-lg border border-gray-200 w-full max-w-4xl mx-auto mt-6 flex items-center gap-4">
+    <div className="bg-white p-4 shadow-lg rounded-lg border border-gray-200 w-full max-w-5xl mx-auto mt-6 flex items-center gap-4">
       <input
         type="text"
         placeholder="Search by team..."
-        className="p-3 border border-gray-300 rounded-lg flex-1 shadow-sm focus:ring-2 focus:ring-blue-500"
+        className="p-3 border border-gray-300 rounded-lg w-1/4 shadow-sm focus:ring-2 focus:ring-blue-500"
         value={filters.team}
         onChange={(e) => setFilters({ ...filters, team: e.target.value })}
       />
       <input
         type="date"
-        className="p-3 border border-gray-300 rounded-lg flex-1 shadow-sm focus:ring-2 focus:ring-blue-500"
+        className="p-3 border border-gray-300 rounded-lg w-1/4 shadow-sm focus:ring-2 focus:ring-blue-500"
         value={filters.date}
         onChange={(e) => setFilters({ ...filters, date: e.target.value })}
       />
       <input
         type="text"
         placeholder="Search by location..."
-        className="p-3 border border-gray-300 rounded-lg flex-1 shadow-sm focus:ring-2 focus:ring-blue-500"
+        className="p-3 border border-gray-300 rounded-lg w-1/4 shadow-sm focus:ring-2 focus:ring-blue-500"
         value={filters.location}
         onChange={(e) => setFilters({ ...filters, location: e.target.value })}
       />
+      <button className="bg-blue-600 text-white p-3 rounded-lg w-1/6 font-semibold shadow-md hover:bg-blue-700 transition duration-200">
+        Search
+      </button>
     </div>
   );
 }
