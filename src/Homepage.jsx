@@ -1,12 +1,18 @@
 import { useState } from "react";
 
 const mockGames = [
-  { id: 1, teams: ["Los Angeles Lakers", "Golden State Warriors"], date: "2025-03-25", location: "Crypto.com Arena, Los Angeles, CA", league: "NBA", prices: [120, 110, 130] },
-  { id: 2, teams: ["Los Angeles Rams", "San Francisco 49ers"], date: "2025-10-12", location: "SoFi Stadium, Los Angeles, CA", league: "NFL", prices: [200, 180, 220] },
-  { id: 3, teams: ["Los Angeles Dodgers", "San Diego Padres"], date: "2025-06-15", location: "Dodger Stadium, Los Angeles, CA", league: "MLB", prices: [45, 50, 55] },
-  { id: 4, teams: ["Los Angeles Clippers", "Phoenix Suns"], date: "2025-04-05", location: "Crypto.com Arena, Los Angeles, CA", league: "NBA", prices: [90, 85, 100] },
-  { id: 5, teams: ["Los Angeles Chargers", "Kansas City Chiefs"], date: "2025-11-20", location: "SoFi Stadium, Los Angeles, CA", league: "NFL", prices: [150, 140, 160] },
-  { id: 6, teams: ["Los Angeles Angels", "New York Yankees"], date: "2025-07-22", location: "Angel Stadium, Anaheim, CA", league: "MLB", prices: [30, 35, 40] },
+  { id: 1, teams: ["Los Angeles Lakers", "Golden State Warriors"], date: "2025-03-25", location: "Crypto.com Arena, Los Angeles, CA", league: "NBA", 
+    tickets: [
+      { price: 120, section: "101", row: "A" },
+      { price: 110, section: "102", row: "B" },
+      { price: 130, section: "201", row: "C" },
+    ] },
+  { id: 2, teams: ["Los Angeles Rams", "San Francisco 49ers"], date: "2025-10-12", location: "SoFi Stadium, Los Angeles, CA", league: "NFL", 
+    tickets: [
+      { price: 200, section: "301", row: "D" },
+      { price: 180, section: "302", row: "E" },
+      { price: 220, section: "101", row: "F" },
+    ] },
 ];
 
 function Navbar() {
@@ -57,7 +63,7 @@ function SearchBar({ filters, setFilters, onSearch }) {
 }
 
 function EventCard({ event, onSelect }) {
-  const lowestPrice = event.prices && event.prices.length > 0 ? Math.min(...event.prices) : null;
+  const lowestPrice = event.tickets && event.tickets.length > 0 ? Math.min(...event.tickets.map(ticket => ticket.price)) : null;
   return (
     <div 
       className="bg-white shadow-lg p-6 rounded-xl border border-gray-300 flex flex-col space-y-4 hover:shadow-2xl transition duration-300 transform hover:-translate-y-2 cursor-pointer"
@@ -73,18 +79,45 @@ function EventCard({ event, onSelect }) {
 }
 
 function EventDetails({ event, onBack }) {
+  const [sortOrder, setSortOrder] = useState("lowToHigh");
+  const [filterSection, setFilterSection] = useState("");
+  const [filterRow, setFilterRow] = useState("");
+
+  let sortedTickets = [...event.tickets];
+
+  if (filterSection) {
+    sortedTickets = sortedTickets.filter(ticket => ticket.section === filterSection);
+  }
+  if (filterRow) {
+    sortedTickets = sortedTickets.filter(ticket => ticket.row === filterRow);
+  }
+
+  sortedTickets.sort((a, b) => sortOrder === "lowToHigh" ? a.price - b.price : b.price - a.price);
+
   return (
     <div className="bg-white p-6 shadow-lg rounded-lg max-w-3xl mx-auto mt-10">
       <button className="text-blue-600 font-semibold mb-4" onClick={onBack}>&larr; Back to Events</button>
       <h2 className="text-2xl font-bold">{event.teams.join(" vs. ")}</h2>
       <p className="text-gray-600">📅 {event.date} | 📍 {event.location}</p>
+      <div className="mt-4 flex gap-4">
+        <select onChange={(e) => setSortOrder(e.target.value)} className="border p-2 rounded">
+          <option value="lowToHigh">Sort: Low to High</option>
+          <option value="highToLow">Sort: High to Low</option>
+        </select>
+        <input type="text" placeholder="Filter by section" className="border p-2 rounded" value={filterSection} onChange={(e) => setFilterSection(e.target.value)} />
+        <input type="text" placeholder="Filter by row" className="border p-2 rounded" value={filterRow} onChange={(e) => setFilterRow(e.target.value)} />
+      </div>
       <h3 className="text-lg font-semibold mt-4">Available Tickets:</h3>
       <ul className="mt-2 space-y-2">
-        {event.prices.map((price, index) => (
-          <li key={index} className="text-blue-600 font-medium bg-gray-100 p-2 rounded-md shadow-sm">
-            ${price} per ticket
-          </li>
-        ))}
+        {sortedTickets.length > 0 ? (
+          sortedTickets.map((ticket, index) => (
+            <li key={index} className="text-blue-600 font-medium bg-gray-100 p-2 rounded-md shadow-sm">
+              ${ticket.price} - Section {ticket.section}, Row {ticket.row}
+            </li>
+          ))
+        ) : (
+          <p className="text-red-500">No tickets match your filters.</p>
+        )}
       </ul>
     </div>
   );
@@ -114,13 +147,9 @@ export default function Homepage() {
           <>
             <SearchBar filters={filters} setFilters={setFilters} onSearch={handleSearch} />
             <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-10 pb-20">
-              {filteredEvents.length > 0 ? (
-                filteredEvents.map(event => (
-                  <EventCard key={event.id} event={event} onSelect={setSelectedEvent} />
-                ))
-              ) : (
-                <p className="text-gray-600 text-center col-span-full">No events found. Please search for a team or location.</p>
-              )}
+              {filteredEvents.map(event => (
+                <EventCard key={event.id} event={event} onSelect={setSelectedEvent} />
+              ))}
             </div>
           </>
         ) : (
