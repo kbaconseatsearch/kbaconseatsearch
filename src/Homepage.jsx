@@ -52,6 +52,20 @@ const leagueVenues = {
   ]
 };
 
+// Ticket brokers array
+const ticketBrokers = [
+  { name: "Ticketmaster", fee: 0.15 },
+  { name: "StubHub", fee: 0.18 },
+  { name: "SeatGeek", fee: 0.12 },
+  { name: "Vivid Seats", fee: 0.17 },
+  { name: "GameTime", fee: 0.10 },
+  { name: "TickPick", fee: 0.09 },
+  { name: "TicketCity", fee: 0.16 },
+  { name: "TicketNetwork", fee: 0.14 },
+  { name: "AXS", fee: 0.13 },
+  { name: "Ticket Liquidator", fee: 0.15 }
+];
+
 // Helper functions for generating mock data
 function getRandomElement(array) {
   return array[Math.floor(Math.random() * array.length)];
@@ -80,26 +94,33 @@ function generateFutureDate(minDays = 1, maxDays = 180) {
   return futureDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
 }
 
-// Modified to generate tickets in groups of 2-4 adjacent seats
-function generateTickets(count = 5) {
+// Modified to generate tickets in groups of 2-6 adjacent seats with broker information
+function generateTickets(count = 30) {
   const tickets = [];
   const sections = ["100", "101", "102", "200", "201", "202", "300", "301", "302"];
   const rows = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K"];
   
-  // Generate tickets in groups of 2-4 adjacent seats
+  // Generate tickets in groups of 2-6 adjacent seats
   let remainingCount = count;
   while (remainingCount > 0) {
     const section = getRandomElement(sections);
     const row = getRandomElement(rows);
-    // Generate 2-4 adjacent seats in the same section and row
-    const adjacentCount = Math.min(getRandomInt(2, 4), remainingCount);
+    // Generate 2-6 adjacent seats in the same section and row
+    const adjacentCount = Math.min(getRandomInt(2, 6), remainingCount);
     const price = getRandomInt(50, 500);
+    const broker = getRandomElement(ticketBrokers);
+    
+    // Apply slight price variation based on broker (some brokers might be more expensive)
+    const finalPrice = Math.round(price * (1 + broker.fee));
     
     for (let i = 0; i < adjacentCount; i++) {
       tickets.push({
-        price: price,
+        price: finalPrice,
         section: section,
         row: row,
+        seat: i + 1, // Add seat number for better display
+        broker: broker.name,
+        brokerFee: broker.fee,
         groupId: `${section}-${row}-${Date.now()}` // To identify tickets in the same group
       });
     }
@@ -112,6 +133,12 @@ function generateTickets(count = 5) {
 
 function generateMockGames(searchParams) {
   const { team, date, location } = searchParams;
+  
+  // Check if all search fields are empty
+  if (!team && !date && !location) {
+    return []; // Return empty array to indicate no events found
+  }
+  
   const results = [];
   const leagues = ["NBA", "NFL", "MLB", "NHL"];
   
@@ -182,7 +209,7 @@ function generateMockGames(searchParams) {
         date: eventDate,
         location: venue,
         league: league,
-        tickets: generateTickets(getRandomInt(10, 20))
+        tickets: generateTickets(getRandomInt(20, 30)) // Increased to 20-30 tickets per event
       });
     }
   });
@@ -276,7 +303,6 @@ function PriceRangeSlider({ minPrice, maxPrice, priceRange, setPriceRange }) {
             style={{ height: '20px' }}
           />
         </div>
-        {/* Removed the div containing the min/max values below the slider */}
       </div>
     </div>
   );
@@ -284,6 +310,10 @@ function PriceRangeSlider({ minPrice, maxPrice, priceRange, setPriceRange }) {
 
 function EventCard({ event, onSelect }) {
   const lowestPrice = event.tickets && event.tickets.length > 0 ? Math.min(...event.tickets.map(ticket => ticket.price)) : null;
+  const brokerCount = event.tickets && event.tickets.length > 0 
+    ? new Set(event.tickets.map(ticket => ticket.broker)).size 
+    : 0;
+    
   return (
     <div 
       className="bg-white shadow-lg p-6 rounded-xl border border-gray-300 flex flex-col space-y-4 hover:shadow-2xl transition duration-300 transform hover:-translate-y-2 cursor-pointer"
@@ -295,7 +325,7 @@ function EventCard({ event, onSelect }) {
       {lowestPrice !== null && (
         <p className="text-green-600 text-lg font-semibold">Tickets from ${lowestPrice}</p>
       )}
-      <p className="text-gray-600 text-sm">{event.tickets.length} tickets available</p>
+      <p className="text-gray-600 text-sm">{event.tickets.length} tickets available from {brokerCount} sellers</p>
     </div>
   );
 }
@@ -305,7 +335,7 @@ function EventDetails({ event, onBack }) {
   const [filterSection, setFilterSection] = useState("");
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [minMaxPrices, setMinMaxPrices] = useState([0, 1000]);
-  const [ticketQuantity, setTicketQuantity] = useState(2); // Changed from 1 to 2
+  const [ticketQuantity, setTicketQuantity] = useState(2);
 
   useEffect(() => {
     if (event.tickets && event.tickets.length > 0) {
@@ -317,7 +347,7 @@ function EventDetails({ event, onBack }) {
     }
   }, [event]);
 
-  // Group tickets by section and group ID
+  // Group tickets by section, row, and broker
   const groupTickets = (tickets) => {
     const groups = {};
     tickets.forEach(ticket => {
@@ -331,7 +361,7 @@ function EventDetails({ event, onBack }) {
 
   let filteredTickets = [...event.tickets];
   
-  // Apply section filter (real-time) - using includes() instead of exact match
+  // Apply section filter (real-time)
   if (filterSection) {
     filteredTickets = filteredTickets.filter(ticket => 
       ticket.section.includes(filterSection)
@@ -343,7 +373,7 @@ function EventDetails({ event, onBack }) {
     ticket => ticket.price >= priceRange[0] && ticket.price <= priceRange[1]
   );
 
-  // Group tickets by section and group ID
+  // Group tickets
   const ticketGroups = groupTickets(filteredTickets);
   
   // Filter by quantity
@@ -392,7 +422,7 @@ function EventDetails({ event, onBack }) {
           onChange={(e) => setFilterSection(e.target.value)} 
         />
         
-        {/* Ticket quantity filter - updated to select 2 by default */}
+        {/* Ticket quantity filter */}
         <select 
           value={ticketQuantity} 
           onChange={(e) => setTicketQuantity(parseInt(e.target.value))} 
@@ -414,19 +444,50 @@ function EventDetails({ event, onBack }) {
         setPriceRange={setPriceRange} 
       />
       
-      <h3 className="text-lg font-semibold mt-4">Available Tickets:</h3>
+      <div className="flex justify-between items-center mt-4">
+        <h3 className="text-lg font-semibold">Available Tickets:</h3>
+        <p className="text-sm text-gray-600">
+          {filteredGroups.length} listings • {filteredTickets.length} tickets
+        </p>
+      </div>
       
       {filteredGroups.length > 0 ? (
         <div className="mt-2 space-y-4">
-          {filteredGroups.map(([groupId, tickets]) => (
-            <div key={groupId} className="bg-gray-100 p-3 rounded-md shadow-sm">
-              <p className="font-medium text-gray-700">Section {tickets[0].section}, Row {tickets[0].row}</p>
-              <p className="text-blue-600">{tickets.length} tickets available at ${tickets[0].price} each</p>
-              <button className="mt-2 bg-green-500 text-white px-3 py-1 rounded-md text-sm hover:bg-green-600 transition">
-                Select {Math.min(ticketQuantity, tickets.length)} ticket{ticketQuantity > 1 ? 's' : ''}
-              </button>
-            </div>
-          ))}
+          {filteredGroups.map(([groupId, tickets]) => {
+            const broker = tickets[0].broker;
+            const brokerFee = tickets[0].brokerFee;
+            
+            // Calculate service fee display
+            const serviceFee = Math.round(tickets[0].price * brokerFee);
+            const totalPrice = tickets[0].price + serviceFee;
+            
+            return (
+              <div key={groupId} className="bg-gray-100 p-4 rounded-md shadow-sm border border-gray-200">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="font-medium text-gray-700">Section {tickets[0].section}, Row {tickets[0].row}</p>
+                    <p className="text-gray-600 text-sm mt-1">
+                      {tickets.length} tickets available • Seats {tickets[0].seat} - {tickets[tickets.length-1].seat}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-gray-900">${tickets[0].price}/ea</p>
+                    <p className="text-xs text-gray-500">+${serviceFee} fee</p>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center mt-3">
+                  <p className="text-blue-600 font-medium text-sm flex items-center">
+                    <span className="bg-blue-100 text-blue-800 text-xs py-1 px-2 rounded-full mr-2">
+                      {broker}
+                    </span>
+                  </p>
+                  <button className="bg-green-500 text-white px-4 py-2 rounded-md text-sm hover:bg-green-600 transition">
+                    Select {Math.min(ticketQuantity, tickets.length)} • ${totalPrice * Math.min(ticketQuantity, tickets.length)}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       ) : (
         <p className="text-red-500 mt-2">No tickets match your filters. Try adjusting your criteria.</p>
@@ -474,7 +535,7 @@ export default function Homepage() {
                   </>
                 ) : (
                   <div className="text-center mt-20 text-gray-500">
-                    <p>No events found matching your criteria. Try broadening your search.</p>
+                    <p>0 events match your search. Please try different search criteria.</p>
                   </div>
                 )}
               </>
