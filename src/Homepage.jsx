@@ -80,17 +80,31 @@ function generateFutureDate(minDays = 1, maxDays = 180) {
   return futureDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
 }
 
+// Modified to generate tickets in groups of 2-4 adjacent seats
 function generateTickets(count = 5) {
   const tickets = [];
   const sections = ["100", "101", "102", "200", "201", "202", "300", "301", "302"];
   const rows = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K"];
   
-  for (let i = 0; i < count; i++) {
-    tickets.push({
-      price: getRandomInt(50, 500),
-      section: getRandomElement(sections),
-      row: getRandomElement(rows)
-    });
+  // Generate tickets in groups of 2-4 adjacent seats
+  let remainingCount = count;
+  while (remainingCount > 0) {
+    const section = getRandomElement(sections);
+    const row = getRandomElement(rows);
+    // Generate 2-4 adjacent seats in the same section and row
+    const adjacentCount = Math.min(getRandomInt(2, 4), remainingCount);
+    const price = getRandomInt(50, 500);
+    
+    for (let i = 0; i < adjacentCount; i++) {
+      tickets.push({
+        price: price,
+        section: section,
+        row: row,
+        groupId: `${section}-${row}-${Date.now()}` // To identify tickets in the same group
+      });
+    }
+    
+    remainingCount -= adjacentCount;
   }
   
   return tickets;
@@ -100,6 +114,9 @@ function generateMockGames(searchParams) {
   const { team, date, location } = searchParams;
   const results = [];
   const leagues = ["NBA", "NFL", "MLB", "NHL"];
+  
+  // Create a unique search ID to prevent ID collisions across searches
+  const searchId = Date.now();
   
   // Determine which leagues might contain the searched team
   let possibleLeagues = [...leagues];
@@ -160,12 +177,12 @@ function generateMockGames(searchParams) {
       const eventDate = date || generateFutureDate();
       
       results.push({
-        id: Date.now() + i, // Unique ID
+        id: `${searchId}-${league}-${i}`, // More unique ID using search timestamp + league + counter
         teams: teamPair,
         date: eventDate,
         location: venue,
         league: league,
-        tickets: generateTickets(getRandomInt(3, 8))
+        tickets: generateTickets(getRandomInt(10, 20))
       });
     }
   });
@@ -222,7 +239,7 @@ function SearchBar({ filters, setFilters, onSearch }) {
 
 function PriceRangeSlider({ minPrice, maxPrice, priceRange, setPriceRange }) {
   return (
-    <div className="mt-4 mb-6">
+    <div className="mt-4 mb-8">
       <div className="mb-2 flex justify-between">
         <span className="font-medium text-gray-700">Price Range:</span>
         <span className="text-blue-600">${priceRange[0]} - ${priceRange[1]}</span>
@@ -259,10 +276,7 @@ function PriceRangeSlider({ minPrice, maxPrice, priceRange, setPriceRange }) {
             style={{ height: '20px' }}
           />
         </div>
-        <div className="flex justify-between mt-2 text-xs text-gray-500">
-          <span>${minPrice}</span>
-          <span>${maxPrice}</span>
-        </div>
+        {/* Removed the div containing the min/max values below the slider */}
       </div>
     </div>
   );
@@ -281,6 +295,7 @@ function EventCard({ event, onSelect }) {
       {lowestPrice !== null && (
         <p className="text-green-600 text-lg font-semibold">Tickets from ${lowestPrice}</p>
       )}
+      <p className="text-gray-600 text-sm">{event.tickets.length} tickets available</p>
     </div>
   );
 }
@@ -288,9 +303,9 @@ function EventCard({ event, onSelect }) {
 function EventDetails({ event, onBack }) {
   const [sortOrder, setSortOrder] = useState("lowToHigh");
   const [filterSection, setFilterSection] = useState("");
-  const [filterRow, setFilterRow] = useState("");
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [minMaxPrices, setMinMaxPrices] = useState([0, 1000]);
+  const [ticketQuantity, setTicketQuantity] = useState(2); // Changed from 1 to 2
 
   useEffect(() => {
     if (event.tickets && event.tickets.length > 0) {
@@ -302,31 +317,56 @@ function EventDetails({ event, onBack }) {
     }
   }, [event]);
 
-  let sortedTickets = [...event.tickets];
+  // Group tickets by section and group ID
+  const groupTickets = (tickets) => {
+    const groups = {};
+    tickets.forEach(ticket => {
+      if (!groups[ticket.groupId]) {
+        groups[ticket.groupId] = [];
+      }
+      groups[ticket.groupId].push(ticket);
+    });
+    return groups;
+  };
 
-  // Apply all filters
+  let filteredTickets = [...event.tickets];
+  
+  // Apply section filter (real-time) - using includes() instead of exact match
   if (filterSection) {
-    sortedTickets = sortedTickets.filter(ticket => ticket.section === filterSection);
-  }
-  if (filterRow) {
-    sortedTickets = sortedTickets.filter(ticket => ticket.row === filterRow);
+    filteredTickets = filteredTickets.filter(ticket => 
+      ticket.section.includes(filterSection)
+    );
   }
   
   // Apply price range filter
-  sortedTickets = sortedTickets.filter(
+  filteredTickets = filteredTickets.filter(
     ticket => ticket.price >= priceRange[0] && ticket.price <= priceRange[1]
   );
 
-  // Apply sorting
-  if (sortOrder === "lowToHigh") {
-    sortedTickets.sort((a, b) => a.price - b.price);
-  } else if (sortOrder === "highToLow") {
-    sortedTickets.sort((a, b) => b.price - a.price);
-  } else if (sortOrder === "sectionLowToHigh") {
-    sortedTickets.sort((a, b) => parseInt(a.section) - parseInt(b.section));
-  } else if (sortOrder === "sectionHighToLow") {
-    sortedTickets.sort((a, b) => parseInt(b.section) - parseInt(a.section));
-  }
+  // Group tickets by section and group ID
+  const ticketGroups = groupTickets(filteredTickets);
+  
+  // Filter by quantity
+  const filteredGroups = Object.entries(ticketGroups).filter(
+    ([_, tickets]) => tickets.length >= ticketQuantity
+  );
+
+  // Sort groups based on sort order
+  filteredGroups.sort((a, b) => {
+    const ticketsA = a[1];
+    const ticketsB = b[1];
+    
+    if (sortOrder === "lowToHigh") {
+      return ticketsA[0].price - ticketsB[0].price;
+    } else if (sortOrder === "highToLow") {
+      return ticketsB[0].price - ticketsA[0].price;
+    } else if (sortOrder === "sectionLowToHigh") {
+      return parseInt(ticketsA[0].section) - parseInt(ticketsB[0].section);
+    } else if (sortOrder === "sectionHighToLow") {
+      return parseInt(ticketsB[0].section) - parseInt(ticketsA[0].section);
+    }
+    return 0;
+  });
 
   return (
     <div className="bg-white p-6 shadow-lg rounded-lg max-w-3xl mx-auto mt-10">
@@ -342,8 +382,28 @@ function EventDetails({ event, onBack }) {
           <option value="sectionLowToHigh">Sort: Section Low to High</option>
           <option value="sectionHighToLow">Sort: Section High to Low</option>
         </select>
-        <input type="text" placeholder="Filter by section" className="border p-2 rounded" value={filterSection} onChange={(e) => setFilterSection(e.target.value)} />
-        <input type="text" placeholder="Filter by row" className="border p-2 rounded" value={filterRow} onChange={(e) => setFilterRow(e.target.value)} />
+        
+        {/* Real-time section filter */}
+        <input 
+          type="text" 
+          placeholder="Filter by section" 
+          className="border p-2 rounded" 
+          value={filterSection} 
+          onChange={(e) => setFilterSection(e.target.value)} 
+        />
+        
+        {/* Ticket quantity filter - updated to select 2 by default */}
+        <select 
+          value={ticketQuantity} 
+          onChange={(e) => setTicketQuantity(parseInt(e.target.value))} 
+          className="border p-2 rounded"
+        >
+          <option value="1">1 Ticket</option>
+          <option value="2">2 Tickets</option>
+          <option value="3">3 Tickets</option>
+          <option value="4">4 Tickets</option>
+          <option value="5">5+ Tickets</option>
+        </select>
       </div>
       
       {/* Price Range Slider */}
@@ -355,17 +415,22 @@ function EventDetails({ event, onBack }) {
       />
       
       <h3 className="text-lg font-semibold mt-4">Available Tickets:</h3>
-      <ul className="mt-2 space-y-2">
-        {sortedTickets.length > 0 ? (
-          sortedTickets.map((ticket, index) => (
-            <li key={index} className="text-blue-600 font-medium bg-gray-100 p-2 rounded-md shadow-sm">
-              ${ticket.price} - Section {ticket.section}, Row {ticket.row}
-            </li>
-          ))
-        ) : (
-          <p className="text-red-500">No tickets match your filters. Try adjusting your criteria.</p>
-        )}
-      </ul>
+      
+      {filteredGroups.length > 0 ? (
+        <div className="mt-2 space-y-4">
+          {filteredGroups.map(([groupId, tickets]) => (
+            <div key={groupId} className="bg-gray-100 p-3 rounded-md shadow-sm">
+              <p className="font-medium text-gray-700">Section {tickets[0].section}, Row {tickets[0].row}</p>
+              <p className="text-blue-600">{tickets.length} tickets available at ${tickets[0].price} each</p>
+              <button className="mt-2 bg-green-500 text-white px-3 py-1 rounded-md text-sm hover:bg-green-600 transition">
+                Select {Math.min(ticketQuantity, tickets.length)} ticket{ticketQuantity > 1 ? 's' : ''}
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-red-500 mt-2">No tickets match your filters. Try adjusting your criteria.</p>
+      )}
     </div>
   );
 }
