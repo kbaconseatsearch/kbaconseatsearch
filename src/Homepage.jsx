@@ -31,26 +31,285 @@ const leagueTeams = {
 // Stadium data
 const leagueVenues = {
   NBA: [
-    "Crypto.com Arena, Los Angeles, CA", "Chase Center, San Francisco, CA", "TD Garden, Boston, MA",
-    "FTX Arena, Miami, FL", "United Center, Chicago, IL", "Barclays Center, Brooklyn, NY",
-    "Fiserv Forum, Milwaukee, WI", "Footprint Center, Phoenix, AZ", "American Airlines Center, Dallas, TX"
+    "State Farm Arena, Atlanta, Georgia",
+    "TD Garden, Boston, Massachusetts",
+    "Barclays Center, Brooklyn, New York",
+    "Spectrum Center, Charlotte, North Carolina",
+    "United Center, Chicago, Illinois",
+    "Rocket Mortgage Fieldhouse, Cleveland, Ohio",
+    "American Airlines Center, Dallas, Texas",
+    "Ball Arena, Denver, Colorado",
+    "Little Caesars Arena, Detroit, Michigan",
+    "Chase Center, San Francisco, California",
+    "Toyota Center, Houston, Texas",
+    "Gainbridge Fieldhouse, Indianapolis, Indiana",
+    "Crypto.com Arena, Los Angeles, California",
+    "FedExForum, Memphis, Tennessee",
+    "Kaseya Center, Miami, Florida",
+    "Fiserv Forum, Milwaukee, Wisconsin",
+    "Target Center, Minneapolis, Minnesota",
+    "Smoothie King Center, New Orleans, Louisiana",
+    "Madison Square Garden, New York City, New York",
+    "Paycom Center, Oklahoma City, Oklahoma",
+    "Kia Center, Orlando, Florida",
+    "Wells Fargo Center, Philadelphia, Pennsylvania",
+    "Footprint Center, Phoenix, Arizona",
+    "Moda Center, Portland, Oregon",
+    "Golden 1 Center, Sacramento, California",
+    "Frost Bank Center, San Antonio, Texas",
+    "Scotiabank Arena, Toronto, Ontario, Canada",
+    "Delta Center, Salt Lake City, Utah",
+    "Capital One Arena, Washington, D.C."
   ],
   NFL: [
-    "SoFi Stadium, Los Angeles, CA", "Levi's Stadium, Santa Clara, CA", "Arrowhead Stadium, Kansas City, MO",
-    "Raymond James Stadium, Tampa, FL", "Highmark Stadium, Orchard Park, NY", "Lambeau Field, Green Bay, WI",
-    "AT&T Stadium, Arlington, TX", "Gillette Stadium, Foxborough, MA", "M&T Bank Stadium, Baltimore, MD"
+    "State Farm Stadium, Glendale, Arizona",
+    "Mercedes-Benz Stadium, Atlanta, Georgia",
+    "M&T Bank Stadium, Baltimore, Maryland",
+    "Highmark Stadium, Orchard Park, New York",
+    "Bank of America Stadium, Charlotte, North Carolina",
+    "Soldier Field, Chicago, Illinois",
+    "Paycor Stadium, Cincinnati, Ohio",
+    "Cleveland Browns Stadium, Cleveland, Ohio",
+    "AT&T Stadium, Arlington, Texas",
+    "Empower Field at Mile High, Denver, Colorado",
+    "Ford Field, Detroit, Michigan",
+    "Lambeau Field, Green Bay, Wisconsin",
+    "NRG Stadium, Houston, Texas",
+    "Lucas Oil Stadium, Indianapolis, Indiana",
+    "TIAA Bank Field, Jacksonville, Florida",
+    "GEHA Field at Arrowhead Stadium, Kansas City, Missouri",
+    "Allegiant Stadium, Paradise, Nevada",
+    "SoFi Stadium, Inglewood, California",
+    "Hard Rock Stadium, Miami Gardens, Florida",
+    "U.S. Bank Stadium, Minneapolis, Minnesota",
+    "Gillette Stadium, Foxborough, Massachusetts",
+    "Caesars Superdome, New Orleans, Louisiana",
+    "MetLife Stadium, East Rutherford, New Jersey",
+    "Lincoln Financial Field, Philadelphia, Pennsylvania",
+    "Acrisure Stadium, Pittsburgh, Pennsylvania",
+    "Levi's Stadium, Santa Clara, California",
+    "Lumen Field, Seattle, Washington",
+    "Raymond James Stadium, Tampa, Florida",
+    "Nissan Stadium, Nashville, Tennessee",
+    "Commanders Field, Landover, Maryland",
+    "Intuit Dome, Ingliwood, Californoa"
   ],
   MLB: [
-    "Dodger Stadium, Los Angeles, CA", "Yankee Stadium, Bronx, NY", "Fenway Park, Boston, MA",
-    "Minute Maid Park, Houston, TX", "Wrigley Field, Chicago, IL", "Oracle Park, San Francisco, CA",
-    "Truist Park, Atlanta, GA", "Busch Stadium, St. Louis, MO", "Rogers Centre, Toronto, ON"
+    "Chase Field, Phoenix, Arizona",
+    "Truist Park, Cumberland, Georgia",
+    "Oriole Park at Camden Yards, Baltimore, Maryland",
+    "Fenway Park, Boston, Massachusetts",
+    "Wrigley Field, Chicago, Illinois",
+    "Guaranteed Rate Field, Chicago, Illinois",
+    "Great American Ball Park, Cincinnati, Ohio",
+    "Progressive Field, Cleveland, Ohio",
+    "Coors Field, Denver, Colorado",
+    "Comerica Park, Detroit, Michigan",
+    "Minute Maid Park, Houston, Texas",
+    "Kauffman Stadium, Kansas City, Missouri",
+    "Angel Stadium, Anaheim, California",
+    "Dodger Stadium, Los Angeles, California",
+    "LoanDepot Park, Miami, Florida",
+    "American Family Field, Milwaukee, Wisconsin",
+    "Target Field, Minneapolis, Minnesota",
+    "Citi Field, Queens, New York City, New York",
+    "Yankee Stadium, Bronx, New York City, New York",
+    "Oakland-Alameda County Coliseum, Oakland, California",
+    "Citizens Bank Park, Philadelphia, Pennsylvania",
+    "PNC Park, Pittsburgh, Pennsylvania",
+    "Petco Park, San Diego, California",
+    "Oracle Park, San Francisco, California",
+    "T-Mobile Park, Seattle, Washington",
+    "Busch Stadium, St. Louis, Missouri",
+    "Tropicana Field, St. Petersburg, Florida",
+    "Globe Life Field, Arlington, Texas",
+    "Rogers Centre, Toronto, Ontario, Canada",
+    "Nationals Park, Washington, D.C."
   ],
   NHL: [
-    "Amalie Arena, Tampa, FL", "Scotiabank Arena, Toronto, ON", "TD Garden, Boston, MA",
-    "FLA Live Arena, Sunrise, FL", "PNC Arena, Raleigh, NC", "Madison Square Garden, New York, NY",
-    "Ball Arena, Denver, CO", "Rogers Place, Edmonton, AB", "PPG Paints Arena, Pittsburgh, PA"
+    "Honda Center, Anaheim, California",
+    "Mullett Arena, Tempe, Arizona",
+    "TD Garden, Boston, Massachusetts",
+    "KeyBank Center, Buffalo, New York",
+    "Scotiabank Saddledome, Calgary, Alberta, Canada",
+    "PNC Arena, Raleigh, North Carolina",
+    "United Center, Chicago, Illinois",
+    "Ball Arena, Denver, Colorado",
+    "Nationwide Arena, Columbus, Ohio",
+    "American Airlines Center, Dallas, Texas",
+    "Little Caesars Arena, Detroit, Michigan",
+    "Rogers Place, Edmonton, Alberta, Canada",
+    "Amerant Bank Arena, Sunrise, Florida",
+    "Crypto.com Arena, Los Angeles, California",
+    "Xcel Energy Center, Saint Paul, Minnesota",
+    "Bell Centre, Montreal, Quebec, Canada",
+    "Bridgestone Arena, Nashville, Tennessee",
+    "Prudential Center, Newark, New Jersey",
+    "UBS Arena, Elmont, New York",
+    "Madison Square Garden, New York City, New York",
+    "Canadian Tire Centre, Ottawa, Ontario, Canada",
+    "Wells Fargo Center, Philadelphia, Pennsylvania",
+    "PPG Paints Arena, Pittsburgh, Pennsylvania",
+    "SAP Center, San Jose, California",
+    "Climate Pledge Arena, Seattle, Washington",
+    "Enterprise Center, St. Louis, Missouri",
+    "Amalie Arena, Tampa, Florida",
+    "Scotiabank Arena, Toronto, Ontario, Canada",
+    "Rogers Arena, Vancouver, British Columbia, Canada",
+    "T-Mobile Arena, Paradise, Nevada",
+    "Capital One Arena, Washington, D.C.",
+    "Canada Life Centre, Winnipeg, Manitoba, Canada"
   ]
 };
+
+// Team to venue mapping - place this after your leagueVenues definition
+const teamVenueMapping = {
+  // NBA Teams
+  
+  "Atlanta Hawks": "State Farm Arena, Atlanta, Georgia",
+  "Boston Celtics": "TD Garden, Boston, Massachusetts",
+  "Brooklyn Nets": "Barclays Center, Brooklyn, New York",
+  "Charlotte Hornets": "Spectrum Center, Charlotte, North Carolina",
+  "Chicago Bulls": "United Center, Chicago, Illinois",
+  "Cleveland Cavaliers": "Rocket Mortgage FieldHouse, Cleveland, Ohio",
+  "Dallas Mavericks": "American Airlines Center, Dallas, Texas",
+  "Denver Nuggets": "Ball Arena, Denver, Colorado",
+  "Detroit Pistons": "Little Caesars Arena, Detroit, Michigan",
+  "Golden State Warriors": "Chase Center, San Francisco, California",
+  "Houston Rockets": "Toyota Center, Houston, Texas",
+  "Indiana Pacers": "Gainbridge Fieldhouse, Indianapolis, Indiana",
+  "Los Angeles Clippers": "Crypto.com Arena, Los Angeles, California",
+  "Los Angeles Lakers": "Crypto.com Arena, Los Angeles, California",
+  "Memphis Grizzlies": "FedExForum, Memphis, Tennessee",
+  "Miami Heat": "Kaseya Center, Miami, Florida",
+  "Milwaukee Bucks": "Fiserv Forum, Milwaukee, Wisconsin",
+  "Minnesota Timberwolves": "Target Center, Minneapolis, Minnesota",
+  "New Orleans Pelicans": "Smoothie King Center, New Orleans, Louisiana",
+  "New York Knicks": "Madison Square Garden, New York, New York",
+  "Oklahoma City Thunder": "Paycom Center, Oklahoma City, Oklahoma",
+  "Orlando Magic": "Amway Center, Orlando, Florida",
+  "Philadelphia 76ers": "Wells Fargo Center, Philadelphia, Pennsylvania",
+  "Phoenix Suns": "Footprint Center, Phoenix, Arizona",
+  "Portland Trail Blazers": "Moda Center, Portland, Oregon",
+  "Sacramento Kings": "Golden 1 Center, Sacramento, California",
+  "San Antonio Spurs": "Frost Bank Center, San Antonio, Texas",
+  "Toronto Raptors": "Scotiabank Arena, Toronto, Ontario",
+  "Utah Jazz": "Delta Center, Salt Lake City, Utah",
+  "Washington Wizards": "Capital One Arena, Washington, D.C.",
+  
+  // NFL Teams
+  "Arizona Cardinals": "State Farm Stadium, Glendale, Arizona",
+  "Atlanta Falcons": "Mercedes-Benz Stadium, Atlanta, Georgia",
+  "Baltimore Ravens": "M&T Bank Stadium, Baltimore, Maryland",
+  "Buffalo Bills": "Highmark Stadium, Orchard Park, New York",
+  "Carolina Panthers": "Bank of America Stadium, Charlotte, North Carolina",
+  "Chicago Bears": "Soldier Field, Chicago, Illinois",
+  "Cincinnati Bengals": "Paycor Stadium, Cincinnati, Ohio",
+  "Cleveland Browns": "Cleveland Browns Stadium, Cleveland, Ohio",
+  "Dallas Cowboys": "AT&T Stadium, Arlington, Texas",
+  "Denver Broncos": "Empower Field at Mile High, Denver, Colorado",
+  "Detroit Lions": "Ford Field, Detroit, Michigan",
+  "Green Bay Packers": "Lambeau Field, Green Bay, Wisconsin",
+  "Houston Texans": "NRG Stadium, Houston, Texas",
+  "Indianapolis Colts": "Lucas Oil Stadium, Indianapolis, Indiana",
+  "Jacksonville Jaguars": "TIAA Bank Field, Jacksonville, Florida",
+  "Kansas City Chiefs": "GEHA Field at Arrowhead Stadium, Kansas City, Missouri",
+  "Las Vegas Raiders": "Allegiant Stadium, Paradise, Nevada",
+  "Los Angeles Chargers": "SoFi Stadium, Inglewood, California",
+  "Los Angeles Rams": "SoFi Stadium, Inglewood, California",
+  "Miami Dolphins": "Hard Rock Stadium, Miami Gardens, Florida",
+  "Minnesota Vikings": "U.S. Bank Stadium, Minneapolis, Minnesota",
+  "New England Patriots": "Gillette Stadium, Foxborough, Massachusetts",
+  "New Orleans Saints": "Caesars Superdome, New Orleans, Louisiana",
+  "New York Giants": "MetLife Stadium, East Rutherford, New Jersey",
+  "New York Jets": "MetLife Stadium, East Rutherford, New Jersey",
+  "Philadelphia Eagles": "Lincoln Financial Field, Philadelphia, Pennsylvania",
+  "Pittsburgh Steelers": "Acrisure Stadium, Pittsburgh, Pennsylvania",
+  "San Francisco 49ers": "Levi's Stadium, Santa Clara, California",
+  "Seattle Seahawks": "Lumen Field, Seattle, Washington",
+  "Tampa Bay Buccaneers": "Raymond James Stadium, Tampa, Florida",
+  "Tennessee Titans": "Nissan Stadium, Nashville, Tennessee",
+  "Washington Commanders": "Commanders Field, Landover, Maryland",
+  
+  // MLB Teams
+
+    "Arizona Diamondbacks": "Chase Field, Phoenix, Arizona",
+    "Atlanta Braves": "Truist Park, Cumberland, Georgia",
+    "Baltimore Orioles": "Oriole Park at Camden Yards, Baltimore, Maryland",
+    "Boston Red Sox": "Fenway Park, Boston, Massachusetts",
+    "Chicago Cubs": "Wrigley Field, Chicago, Illinois",
+    "Chicago White Sox": "Guaranteed Rate Field, Chicago, Illinois",
+    "Cincinnati Reds": "Great American Ball Park, Cincinnati, Ohio",
+    "Cleveland Guardians": "Progressive Field, Cleveland, Ohio",
+    "Colorado Rockies": "Coors Field, Denver, Colorado",
+    "Detroit Tigers": "Comerica Park, Detroit, Michigan",
+    "Houston Astros": "Minute Maid Park, Houston, Texas",
+    "Kansas City Royals": "Kauffman Stadium, Kansas City, Missouri",
+    "Los Angeles Angels": "Angel Stadium, Anaheim, California",
+    "Los Angeles Dodgers": "Dodger Stadium, Los Angeles, California",
+    "Miami Marlins": "LoanDepot Park, Miami, Florida",
+    "Milwaukee Brewers": "American Family Field, Milwaukee, Wisconsin",
+    "Minnesota Twins": "Target Field, Minneapolis, Minnesota",
+    "New York Mets": "Citi Field, Queens, New York City, New York",
+    "New York Yankees": "Yankee Stadium, Bronx, New York City, New York",
+    "Oakland Athletics": "Oakland-Alameda County Coliseum, Oakland, California",
+    "Philadelphia Phillies": "Citizens Bank Park, Philadelphia, Pennsylvania",
+    "Pittsburgh Pirates": "PNC Park, Pittsburgh, Pennsylvania",
+    "San Diego Padres": "Petco Park, San Diego, California",
+    "San Francisco Giants": "Oracle Park, San Francisco, California",
+    "Seattle Mariners": "T-Mobile Park, Seattle, Washington",
+    "St. Louis Cardinals": "Busch Stadium, St. Louis, Missouri",
+    "Tampa Bay Rays": "Tropicana Field, St. Petersburg, Florida",
+    "Texas Rangers": "Globe Life Field, Arlington, Texas",
+    "Toronto Blue Jays": "Rogers Centre, Toronto, Ontario, Canada",
+    "Washington Nationals": "Nationals Park, Washington, D.C.",
+  
+  
+  // NHL Teams
+  
+  "Anaheim Ducks": "Honda Center, Anaheim, California",
+  "Arizona Coyotes": "Mullett Arena, Tempe, Arizona",
+  "Boston Bruins": "TD Garden, Boston, Massachusetts",
+  "Buffalo Sabres": "KeyBank Center, Buffalo, New York",
+  "Calgary Flames": "Scotiabank Saddledome, Calgary, Alberta, Canada",
+  "Carolina Hurricanes": "PNC Arena, Raleigh, North Carolina",
+  "Chicago Blackhawks": "United Center, Chicago, Illinois",
+  "Colorado Avalanche": "Ball Arena, Denver, Colorado",
+  "Columbus Blue Jackets": "Nationwide Arena, Columbus, Ohio",
+  "Dallas Stars": "American Airlines Center, Dallas, Texas",
+  "Detroit Red Wings": "Little Caesars Arena, Detroit, Michigan",
+  "Edmonton Oilers": "Rogers Place, Edmonton, Alberta, Canada",
+  "Florida Panthers": "Amerant Bank Arena, Sunrise, Florida",
+  "Los Angeles Kings": "Crypto.com Arena, Los Angeles, California",
+  "Minnesota Wild": "Xcel Energy Center, Saint Paul, Minnesota",
+  "Montreal Canadiens": "Bell Centre, Montreal, Quebec, Canada",
+  "Nashville Predators": "Bridgestone Arena, Nashville, Tennessee",
+  "New Jersey Devils": "Prudential Center, Newark, New Jersey",
+  "New York Islanders": "UBS Arena, Elmont, New York",
+  "New York Rangers": "Madison Square Garden, New York City, New York",
+  "Ottawa Senators": "Canadian Tire Centre, Ottawa, Ontario, Canada",
+  "Philadelphia Flyers": "Wells Fargo Center, Philadelphia, Pennsylvania",
+  "Pittsburgh Penguins": "PPG Paints Arena, Pittsburgh, Pennsylvania",
+  "San Jose Sharks": "SAP Center, San Jose, California",
+  "Seattle Kraken": "Climate Pledge Arena, Seattle, Washington",
+  "St. Louis Blues": "Enterprise Center, St. Louis, Missouri",
+  "Tampa Bay Lightning": "Amalie Arena, Tampa, Florida",
+  "Toronto Maple Leafs": "Scotiabank Arena, Toronto, Ontario, Canada",
+  "Vancouver Canucks": "Rogers Arena, Vancouver, British Columbia, Canada",
+  "Vegas Golden Knights": "T-Mobile Arena, Paradise, Nevada",
+  "Washington Capitals": "Capital One Arena, Washington, D.C.",
+  "Winnipeg Jets": "Canada Life Centre, Winnipeg, Manitoba, Canada"
+
+};
+
+// Create reverse mapping from venue to teams
+const venueTeamMapping = {};
+Object.entries(teamVenueMapping).forEach(([team, venue]) => {
+  if (!venueTeamMapping[venue]) {
+    venueTeamMapping[venue] = [];
+  }
+  venueTeamMapping[venue].push(team);
+});
 
 // Ticket brokers array
 const ticketBrokers = [
@@ -131,6 +390,7 @@ function generateTickets(count = 30) {
   return tickets;
 }
 
+// Modified generateMockGames function
 function generateMockGames(searchParams) {
   const { team, date, location } = searchParams;
   
@@ -169,7 +429,7 @@ function generateMockGames(searchParams) {
       let teamPair;
       let venue;
       
-      // If team is specified, ensure it's included
+      // If team is specified, ensure it's included and venue is correct
       if (team) {
         const matchingTeams = leagueTeams[league].filter(leagueTeam => 
           leagueTeam.toLowerCase().includes(team.toLowerCase())
@@ -180,24 +440,49 @@ function generateMockGames(searchParams) {
           const otherTeams = leagueTeams[league].filter(t => t !== selectedTeam);
           const opponent = getRandomElement(otherTeams);
           teamPair = [selectedTeam, opponent];
+          
+          // Use the home venue of the selected team
+          venue = teamVenueMapping[selectedTeam] || getRandomElement(leagueVenues[league]);
         } else {
           teamPair = getRandomTeamPair(league);
+          venue = teamVenueMapping[teamPair[0]] || getRandomElement(leagueVenues[league]);
         }
-      } else {
-        teamPair = getRandomTeamPair(league);
-      }
-      
-      // If location is specified, try to match it
-      if (location) {
+      } 
+      // If location is specified, find teams that play in that location
+      else if (location) {
         const matchingVenues = leagueVenues[league].filter(v => 
           v.toLowerCase().includes(location.toLowerCase())
         );
         
-        venue = matchingVenues.length > 0 
-          ? getRandomElement(matchingVenues) 
-          : getRandomElement(leagueVenues[league]);
-      } else {
-        venue = getRandomElement(leagueVenues[league]);
+        if (matchingVenues.length > 0) {
+          venue = getRandomElement(matchingVenues);
+          
+          // Find teams that play in this venue in this league
+          const possibleHomeTeams = [];
+          for (const [venueTeam, venueLocation] of Object.entries(teamVenueMapping)) {
+            if (venueLocation === venue && leagueTeams[league].includes(venueTeam)) {
+              possibleHomeTeams.push(venueTeam);
+            }
+          }
+          
+          if (possibleHomeTeams.length > 0) {
+            const homeTeam = getRandomElement(possibleHomeTeams);
+            const otherTeams = leagueTeams[league].filter(t => t !== homeTeam);
+            const opponent = getRandomElement(otherTeams);
+            teamPair = [homeTeam, opponent];
+          } else {
+            // If no direct mapping, use a random team from the correct league
+            teamPair = getRandomTeamPair(league);
+          }
+        } else {
+          venue = getRandomElement(leagueVenues[league]);
+          teamPair = getRandomTeamPair(league);
+        }
+      } 
+      // If neither team nor location specified, select a random team and its home venue
+      else {
+        teamPair = getRandomTeamPair(league);
+        venue = teamVenueMapping[teamPair[0]] || getRandomElement(leagueVenues[league]);
       }
       
       // Use the specified date or generate a random one
@@ -209,7 +494,7 @@ function generateMockGames(searchParams) {
         date: eventDate,
         location: venue,
         league: league,
-        tickets: generateTickets(getRandomInt(20, 30)) // Increased to 20-30 tickets per event
+        tickets: generateTickets(getRandomInt(20, 30)) // 20-30 tickets per event
       });
     }
   });
@@ -257,9 +542,9 @@ function SearchBar({ filters, setFilters, onSearch }) {
         onChange={(e) => setFilters({ ...filters, location: e.target.value })}
         onKeyDown={handleKeyDown}
       />
-      <button onClick={onSearch} className="bg-blue-600 text-white p-3 rounded-lg w-1/6 font-semibold shadow-md hover:bg-blue-700 transition duration-200">
-        Search
-      </button>
+      <button onClick={onSearch} className="bg-[#ffbd59] text-white p-3 rounded-lg w-1/6 font-semibold shadow-md hover:bg-[#e8ab4b] transition duration-200">
+  Search
+</button>
     </div>
   );
 }
