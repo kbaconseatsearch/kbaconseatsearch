@@ -3,28 +3,40 @@ import { useState, useEffect } from "react";
 // League team data
 const leagueTeams = {
   NBA: [
-    "Los Angeles Lakers", "Golden State Warriors", "Boston Celtics", "Miami Heat",
-    "Chicago Bulls", "Brooklyn Nets", "Milwaukee Bucks", "Phoenix Suns",
-    "Dallas Mavericks", "Denver Nuggets", "Atlanta Hawks", "New York Knicks",
-    "Philadelphia 76ers", "Toronto Raptors", "Cleveland Cavaliers", "Memphis Grizzlies"
+   "Boston Celtics", "New Jersey Nets", "New York Knicks", "Philadelphia 76ers", "Toronto Raptors", 
+"Chicago Bulls", "Cleveland Cavaliers", "Detroit Pistons", "Indiana Pacers", "Milwaukee Bucks", 
+"Atlanta Hawks", "Charlotte Hornets", "Miami Heat", "Orlando Magic", "Washington Wizards", 
+"Denver Nuggets", "Minnesota Timberwolves", "Oklahoma City Thunder", "Portland Trail Blazers", "Utah Jazz", 
+"Golden State Warriors", "Los Angeles Clippers", "Los Angeles Lakers", "Phoenix Suns", "Sacramento Kings", 
+"Dallas Mavericks", "Houston Rockets", "Memphis Grizzlies", "New Orleans Pelicans", "San Antonio Spurs"
+
   ],
   NFL: [
-    "Los Angeles Rams", "San Francisco 49ers", "Kansas City Chiefs", "Tampa Bay Buccaneers",
-    "Buffalo Bills", "Green Bay Packers", "Dallas Cowboys", "New England Patriots",
-    "Baltimore Ravens", "Cincinnati Bengals", "Tennessee Titans", "Las Vegas Raiders",
-    "Seattle Seahawks", "Arizona Cardinals", "Pittsburgh Steelers", "New Orleans Saints"
+    "Buffalo Bills", "Miami Dolphins", "New England Patriots", "New York Jets", 
+"Baltimore Ravens", "Cincinnati Bengals", "Cleveland Browns", "Pittsburgh Steelers", 
+"Houston Texans", "Indianapolis Colts", "Jacksonville Jaguars", "Tennessee Titans", 
+"Denver Broncos", "Kansas City Chiefs", "Oakland Raiders", "Los Angeles Chargers", 
+"Dallas Cowboys", "New York Giants", "Philadelphia Eagles", "Washington Commanders", 
+"Chicago Bears", "Detroit Lions", "Green Bay Packers", "Minnesota Vikings", 
+"Atlanta Falcons", "Carolina Panthers", "New Orleans Saints", "Tampa Bay Buccaneers", 
+"Arizona Cardinals", "Los Angeles Rams", "San Francisco 49ers", "Seattle Seahawks"
+
   ],
   MLB: [
-    "Los Angeles Dodgers", "New York Yankees", "Boston Red Sox", "Houston Astros",
-    "Chicago Cubs", "San Francisco Giants", "Atlanta Braves", "St. Louis Cardinals",
-    "Toronto Blue Jays", "Philadelphia Phillies", "San Diego Padres", "Miami Marlins",
-    "Milwaukee Brewers", "New York Mets", "Cleveland Guardians", "Chicago White Sox"
+    "Atlanta Braves", "Miami Marlins", "New York Mets", "Philadelphia Phillies", "Washington Nationals", 
+"Chicago Cubs", "Cincinnati Reds", "Milwaukee Brewers", "Pittsburgh Pirates", "St. Louis Cardinals", 
+"Arizona Diamondbacks", "Colorado Rockies", "Los Angeles Dodgers", "San Diego Padres", "San Francisco Giants", 
+"Baltimore Orioles", "Boston Red Sox", "New York Yankees", "Tampa Bay Rays", "Toronto Blue Jays", 
+"Chicago White Sox", "Cleveland Guardians", "Detroit Tigers", "Kansas City Royals", "Minnesota Twins", 
+"Houston Astros", "Los Angeles Angels", "Oakland Athletics", "Seattle Mariners", "Texas Rangers"
+
   ],
   NHL: [
-    "Tampa Bay Lightning", "Toronto Maple Leafs", "Boston Bruins", "Florida Panthers",
-    "Carolina Hurricanes", "New York Rangers", "Colorado Avalanche", "Edmonton Oilers",
-    "Pittsburgh Penguins", "Washington Capitals", "St. Louis Blues", "Calgary Flames",
-    "Minnesota Wild", "Los Angeles Kings", "Vancouver Canucks", "Nashville Predators"
+   "Boston Bruins", "Buffalo Sabres", "Detroit Red Wings", "Florida Panthers", "Montreal Canadiens", "Ottawa Senators", "Tampa Bay Lightning", "Toronto Maple Leafs", 
+"Carolina Hurricanes", "Columbus Blue Jackets", "New Jersey Devils", "New York Islanders", "New York Rangers", "Philadelphia Flyers", "Pittsburgh Penguins", "Washington Capitals", 
+"Arizona Coyotes", "Chicago Blackhawks", "Colorado Avalanche", "Dallas Stars", "Minnesota Wild", "Nashville Predators", "St. Louis Blues", "Winnipeg Jets", 
+"Anaheim Ducks", "Calgary Flames", "Edmonton Oilers", "Los Angeles Kings", "San Jose Sharks", "Seattle Kraken", "Vancouver Canucks", "Vegas Golden Knights"
+
   ]
 };
 
@@ -163,9 +175,7 @@ const leagueVenues = {
 };
 
 // Team to venue mapping - place this after your leagueVenues definition
-const teamVenueMapping = {
-  // NBA Teams
-  
+const teamVenueMapping ={
   "Atlanta Hawks": "State Farm Arena, Atlanta, Georgia",
   "Boston Celtics": "TD Garden, Boston, Massachusetts",
   "Brooklyn Nets": "Barclays Center, Brooklyn, New York",
@@ -212,7 +222,7 @@ const teamVenueMapping = {
   "Green Bay Packers": "Lambeau Field, Green Bay, Wisconsin",
   "Houston Texans": "NRG Stadium, Houston, Texas",
   "Indianapolis Colts": "Lucas Oil Stadium, Indianapolis, Indiana",
-  "Jacksonville Jaguars": "TIAA Bank Field, Jacksonville, Florida",
+  "Jacksonville Jaguars": "EverBank Stadium, Jacksonville, Florida",
   "Kansas City Chiefs": "GEHA Field at Arrowhead Stadium, Kansas City, Missouri",
   "Las Vegas Raiders": "Allegiant Stadium, Paradise, Nevada",
   "Los Angeles Chargers": "SoFi Stadium, Inglewood, California",
@@ -229,44 +239,41 @@ const teamVenueMapping = {
   "Seattle Seahawks": "Lumen Field, Seattle, Washington",
   "Tampa Bay Buccaneers": "Raymond James Stadium, Tampa, Florida",
   "Tennessee Titans": "Nissan Stadium, Nashville, Tennessee",
-  "Washington Commanders": "Commanders Field, Landover, Maryland",
+  "Washington Commanders": "FedExField, Landover, Maryland",
   
   // MLB Teams
-
-    "Arizona Diamondbacks": "Chase Field, Phoenix, Arizona",
-    "Atlanta Braves": "Truist Park, Cumberland, Georgia",
-    "Baltimore Orioles": "Oriole Park at Camden Yards, Baltimore, Maryland",
-    "Boston Red Sox": "Fenway Park, Boston, Massachusetts",
-    "Chicago Cubs": "Wrigley Field, Chicago, Illinois",
-    "Chicago White Sox": "Guaranteed Rate Field, Chicago, Illinois",
-    "Cincinnati Reds": "Great American Ball Park, Cincinnati, Ohio",
-    "Cleveland Guardians": "Progressive Field, Cleveland, Ohio",
-    "Colorado Rockies": "Coors Field, Denver, Colorado",
-    "Detroit Tigers": "Comerica Park, Detroit, Michigan",
-    "Houston Astros": "Minute Maid Park, Houston, Texas",
-    "Kansas City Royals": "Kauffman Stadium, Kansas City, Missouri",
-    "Los Angeles Angels": "Angel Stadium, Anaheim, California",
-    "Los Angeles Dodgers": "Dodger Stadium, Los Angeles, California",
-    "Miami Marlins": "LoanDepot Park, Miami, Florida",
-    "Milwaukee Brewers": "American Family Field, Milwaukee, Wisconsin",
-    "Minnesota Twins": "Target Field, Minneapolis, Minnesota",
-    "New York Mets": "Citi Field, Queens, New York City, New York",
-    "New York Yankees": "Yankee Stadium, Bronx, New York City, New York",
-    "Oakland Athletics": "Oakland-Alameda County Coliseum, Oakland, California",
-    "Philadelphia Phillies": "Citizens Bank Park, Philadelphia, Pennsylvania",
-    "Pittsburgh Pirates": "PNC Park, Pittsburgh, Pennsylvania",
-    "San Diego Padres": "Petco Park, San Diego, California",
-    "San Francisco Giants": "Oracle Park, San Francisco, California",
-    "Seattle Mariners": "T-Mobile Park, Seattle, Washington",
-    "St. Louis Cardinals": "Busch Stadium, St. Louis, Missouri",
-    "Tampa Bay Rays": "Tropicana Field, St. Petersburg, Florida",
-    "Texas Rangers": "Globe Life Field, Arlington, Texas",
-    "Toronto Blue Jays": "Rogers Centre, Toronto, Ontario, Canada",
-    "Washington Nationals": "Nationals Park, Washington, D.C.",
+  "Arizona Diamondbacks": "Chase Field, Phoenix, Arizona",
+  "Atlanta Braves": "Truist Park, Cumberland, Georgia",
+  "Baltimore Orioles": "Oriole Park at Camden Yards, Baltimore, Maryland",
+  "Boston Red Sox": "Fenway Park, Boston, Massachusetts",
+  "Chicago Cubs": "Wrigley Field, Chicago, Illinois",
+  "Chicago White Sox": "Guaranteed Rate Field, Chicago, Illinois",
+  "Cincinnati Reds": "Great American Ball Park, Cincinnati, Ohio",
+  "Cleveland Guardians": "Progressive Field, Cleveland, Ohio",
+  "Colorado Rockies": "Coors Field, Denver, Colorado",
+  "Detroit Tigers": "Comerica Park, Detroit, Michigan",
+  "Houston Astros": "Minute Maid Park, Houston, Texas",
+  "Kansas City Royals": "Kauffman Stadium, Kansas City, Missouri",
+  "Los Angeles Angels": "Angel Stadium, Anaheim, California",
+  "Los Angeles Dodgers": "Dodger Stadium, Los Angeles, California",
+  "Miami Marlins": "LoanDepot Park, Miami, Florida",
+  "Milwaukee Brewers": "American Family Field, Milwaukee, Wisconsin",
+  "Minnesota Twins": "Target Field, Minneapolis, Minnesota",
+  "New York Mets": "Citi Field, Queens, New York",
+  "New York Yankees": "Yankee Stadium, Bronx, New York",
+  "Oakland Athletics": "Oakland-Alameda County Coliseum, Oakland, California",
+  "Philadelphia Phillies": "Citizens Bank Park, Philadelphia, Pennsylvania",
+  "Pittsburgh Pirates": "PNC Park, Pittsburgh, Pennsylvania",
+  "San Diego Padres": "Petco Park, San Diego, California",
+  "San Francisco Giants": "Oracle Park, San Francisco, California",
+  "Seattle Mariners": "T-Mobile Park, Seattle, Washington",
+  "St. Louis Cardinals": "Busch Stadium, St. Louis, Missouri",
+  "Tampa Bay Rays": "Tropicana Field, St. Petersburg, Florida",
+  "Texas Rangers": "Globe Life Field, Arlington, Texas",
+  "Toronto Blue Jays": "Rogers Centre, Toronto, Ontario",
+  "Washington Nationals": "Nationals Park, Washington, D.C.",
   
-  
-  // NHL Teams
-  
+// NHL Teams
   "Anaheim Ducks": "Honda Center, Anaheim, California",
   "Arizona Coyotes": "Mullett Arena, Tempe, Arizona",
   "Boston Bruins": "TD Garden, Boston, Massachusetts",
@@ -286,21 +293,14 @@ const teamVenueMapping = {
   "Nashville Predators": "Bridgestone Arena, Nashville, Tennessee",
   "New Jersey Devils": "Prudential Center, Newark, New Jersey",
   "New York Islanders": "UBS Arena, Elmont, New York",
-  "New York Rangers": "Madison Square Garden, New York City, New York",
+  "New York Rangers": "Madison Square Garden, New York, New York",
   "Ottawa Senators": "Canadian Tire Centre, Ottawa, Ontario, Canada",
   "Philadelphia Flyers": "Wells Fargo Center, Philadelphia, Pennsylvania",
   "Pittsburgh Penguins": "PPG Paints Arena, Pittsburgh, Pennsylvania",
   "San Jose Sharks": "SAP Center, San Jose, California",
   "Seattle Kraken": "Climate Pledge Arena, Seattle, Washington",
-  "St. Louis Blues": "Enterprise Center, St. Louis, Missouri",
-  "Tampa Bay Lightning": "Amalie Arena, Tampa, Florida",
-  "Toronto Maple Leafs": "Scotiabank Arena, Toronto, Ontario, Canada",
-  "Vancouver Canucks": "Rogers Arena, Vancouver, British Columbia, Canada",
-  "Vegas Golden Knights": "T-Mobile Arena, Paradise, Nevada",
-  "Washington Capitals": "Capital One Arena, Washington, D.C.",
-  "Winnipeg Jets": "Canada Life Centre, Winnipeg, Manitoba, Canada"
-
-};
+  "Vancouver Canucks": "Rogers Arena, Vancouver, British Columbia, Canada"
+}
 
 // Create reverse mapping from venue to teams
 const venueTeamMapping = {};
@@ -428,26 +428,28 @@ function generateMockGames(searchParams) {
     for (let i = 0; i < eventCount; i++) {
       let teamPair;
       let venue;
+      let shouldIncludeEvent = true;
       
-      // If team is specified, ensure it's included and venue is correct
-      if (team) {
-        const matchingTeams = leagueTeams[league].filter(leagueTeam => 
-          leagueTeam.toLowerCase().includes(team.toLowerCase())
-        );
-        
-        if (matchingTeams.length > 0) {
-          const selectedTeam = getRandomElement(matchingTeams);
-          const otherTeams = leagueTeams[league].filter(t => t !== selectedTeam);
-          const opponent = getRandomElement(otherTeams);
-          teamPair = [selectedTeam, opponent];
-          
-          // Use the home venue of the selected team
-          venue = teamVenueMapping[selectedTeam] || getRandomElement(leagueVenues[league]);
-        } else {
-          teamPair = getRandomTeamPair(league);
-          venue = teamVenueMapping[teamPair[0]] || getRandomElement(leagueVenues[league]);
-        }
-      } 
+// In the generateMockGames function, modify the team search logic:
+
+if (team) {
+  const matchingTeams = leagueTeams[league].filter(leagueTeam => 
+    leagueTeam.toLowerCase().includes(team.toLowerCase())
+  );
+  
+  if (matchingTeams.length > 0) {
+    const selectedTeam = getRandomElement(matchingTeams);
+    const otherTeams = leagueTeams[league].filter(t => t !== selectedTeam);
+    const opponent = getRandomElement(otherTeams);
+    teamPair = [selectedTeam, opponent];
+    
+    // Use the home venue of the selected team
+    venue = teamVenueMapping[selectedTeam];
+  } else {
+    // If no teams match in this league, we should skip this event entirely
+    shouldIncludeEvent = false;
+  }
+}
       // If location is specified, find teams that play in that location
       else if (location) {
         const matchingVenues = leagueVenues[league].filter(v => 
@@ -457,45 +459,48 @@ function generateMockGames(searchParams) {
         if (matchingVenues.length > 0) {
           venue = getRandomElement(matchingVenues);
           
-          // Find teams that play in this venue in this league
-          const possibleHomeTeams = [];
-          for (const [venueTeam, venueLocation] of Object.entries(teamVenueMapping)) {
-            if (venueLocation === venue && leagueTeams[league].includes(venueTeam)) {
-              possibleHomeTeams.push(venueTeam);
+          // Find teams that play in this venue
+          const homeTeamsForVenue = [];
+          Object.entries(teamVenueMapping).forEach(([team, venueLocation]) => {
+            if (venueLocation === venue && leagueTeams[league].includes(team)) {
+              homeTeamsForVenue.push(team);
             }
-          }
+          });
           
-          if (possibleHomeTeams.length > 0) {
-            const homeTeam = getRandomElement(possibleHomeTeams);
+          if (homeTeamsForVenue.length > 0) {
+            const homeTeam = getRandomElement(homeTeamsForVenue);
             const otherTeams = leagueTeams[league].filter(t => t !== homeTeam);
             const opponent = getRandomElement(otherTeams);
             teamPair = [homeTeam, opponent];
           } else {
-            // If no direct mapping, use a random team from the correct league
-            teamPair = getRandomTeamPair(league);
+            // If no teams from this league play in this venue, skip this event
+            shouldIncludeEvent = false;
           }
         } else {
-          venue = getRandomElement(leagueVenues[league]);
-          teamPair = getRandomTeamPair(league);
+          // No matching venues in this league for this location
+          shouldIncludeEvent = false;
         }
       } 
       // If neither team nor location specified, select a random team and its home venue
       else {
         teamPair = getRandomTeamPair(league);
-        venue = teamVenueMapping[teamPair[0]] || getRandomElement(leagueVenues[league]);
+        venue = teamVenueMapping[teamPair[0]];
       }
       
-      // Use the specified date or generate a random one
-      const eventDate = date || generateFutureDate();
-      
-      results.push({
-        id: `${searchId}-${league}-${i}`, // More unique ID using search timestamp + league + counter
-        teams: teamPair,
-        date: eventDate,
-        location: venue,
-        league: league,
-        tickets: generateTickets(getRandomInt(20, 30)) // 20-30 tickets per event
-      });
+      // Only add the event if it should be included
+      if (shouldIncludeEvent && venue) {
+        // Use the specified date or generate a random one
+        const eventDate = date || generateFutureDate();
+        
+        results.push({
+          id: `${searchId}-${league}-${i}`,
+          teams: teamPair,
+          date: eventDate,
+          location: venue,
+          league: league,
+          tickets: generateTickets(getRandomInt(20, 30))
+        });
+      }
     }
   });
   
@@ -518,33 +523,58 @@ function SearchBar({ filters, setFilters, onSearch }) {
   };
 
   return (
-    <div className="bg-white p-4 shadow-lg rounded-lg border border-gray-200 w-full max-w-5xl mx-auto mt-6 flex items-center gap-4">
-      <input
-        type="text"
-        placeholder="Search by team..."
-        className="p-3 border border-gray-300 rounded-lg w-1/4 shadow-sm focus:ring-2 focus:ring-blue-500"
-        value={filters.team}
-        onChange={(e) => setFilters({ ...filters, team: e.target.value })}
-        onKeyDown={handleKeyDown}
-      />
-      <input
-        type="date"
-        className="p-3 border border-gray-300 rounded-lg w-1/4 shadow-sm focus:ring-2 focus:ring-blue-500"
-        value={filters.date}
-        onChange={(e) => setFilters({ ...filters, date: e.target.value })}
-        onKeyDown={handleKeyDown}
-      />
-      <input
-        type="text"
-        placeholder="Search by location..."
-        className="p-3 border border-gray-300 rounded-lg w-1/4 shadow-sm focus:ring-2 focus:ring-blue-500"
-        value={filters.location}
-        onChange={(e) => setFilters({ ...filters, location: e.target.value })}
-        onKeyDown={handleKeyDown}
-      />
-      <button onClick={onSearch} className="bg-[#ffbd59] text-white p-3 rounded-lg w-1/6 font-semibold shadow-md hover:bg-[#e8ab4b] transition duration-200">
-  Search
-</button>
+    <div className="bg-white p-4 shadow-lg rounded-lg border border-gray-200 w-full max-w-5xl mx-auto mt-6">
+      {/* Mobile layout (flex-col) */}
+      <div className="flex flex-col md:hidden gap-4">
+        <input
+          type="text"
+          placeholder="Search by location..."
+          className="p-3 border border-gray-300 rounded-lg w-full shadow-sm focus:ring-2 focus:ring-blue-500"
+          value={filters.location}
+          onChange={(e) => setFilters({ ...filters, location: e.target.value })}
+          onKeyDown={handleKeyDown}
+        />
+        <input
+          type="text"
+          placeholder="Search by team..."
+          className="p-3 border border-gray-300 rounded-lg w-full shadow-sm focus:ring-2 focus:ring-blue-500"
+          value={filters.team}
+          onChange={(e) => setFilters({ ...filters, team: e.target.value })}
+          onKeyDown={handleKeyDown}
+        />
+        <button 
+          onClick={onSearch} 
+          className="bg-[#ffbd59] text-white p-3 rounded-lg w-full font-semibold shadow-md hover:bg-[#e8ab4b] transition duration-200"
+        >
+          Search
+        </button>
+      </div>
+
+      {/* Desktop layout (flex-row) */}
+      <div className="hidden md:flex items-center gap-4">
+        <input
+          type="text"
+          placeholder="Search by team..."
+          className="p-3 border border-gray-300 rounded-lg w-1/3 shadow-sm focus:ring-2 focus:ring-blue-500"
+          value={filters.team}
+          onChange={(e) => setFilters({ ...filters, team: e.target.value })}
+          onKeyDown={handleKeyDown}
+        />
+        <input
+          type="text"
+          placeholder="Search by location..."
+          className="p-3 border border-gray-300 rounded-lg w-1/3 shadow-sm focus:ring-2 focus:ring-blue-500"
+          value={filters.location}
+          onChange={(e) => setFilters({ ...filters, location: e.target.value })}
+          onKeyDown={handleKeyDown}
+        />
+        <button 
+          onClick={onSearch} 
+          className="bg-[#ffbd59] text-white p-3 rounded-lg w-1/4 font-semibold shadow-md hover:bg-[#e8ab4b] transition duration-200"
+        >
+          Search
+        </button>
+      </div>
     </div>
   );
 }
