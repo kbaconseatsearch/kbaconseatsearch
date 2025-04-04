@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">SeatSearchPro</string>
+    <string name="title_activity_main">SeatSearchPro</string>
+    <string name="package_name">com.searsearchpro.app</string>
+    <string name="custom_url_scheme">com.searsearchpro.app</string>
+</resources>

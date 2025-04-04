@@ -1,9 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
+
+
+
 
 // League team data
 const leagueTeams = {
   NBA: [
-   "Boston Celtics", "New Jersey Nets", "New York Knicks", "Philadelphia 76ers", "Toronto Raptors", 
+   "Boston Celtics", "Brooklyn Nets", "New York Knicks", "Philadelphia 76ers", "Toronto Raptors", 
 "Chicago Bulls", "Cleveland Cavaliers", "Detroit Pistons", "Indiana Pacers", "Milwaukee Bucks", 
 "Atlanta Hawks", "Charlotte Hornets", "Miami Heat", "Orlando Magic", "Washington Wizards", 
 "Denver Nuggets", "Minnesota Timberwolves", "Oklahoma City Thunder", "Portland Trail Blazers", "Utah Jazz", 
@@ -15,7 +20,7 @@ const leagueTeams = {
     "Buffalo Bills", "Miami Dolphins", "New England Patriots", "New York Jets", 
 "Baltimore Ravens", "Cincinnati Bengals", "Cleveland Browns", "Pittsburgh Steelers", 
 "Houston Texans", "Indianapolis Colts", "Jacksonville Jaguars", "Tennessee Titans", 
-"Denver Broncos", "Kansas City Chiefs", "Oakland Raiders", "Los Angeles Chargers", 
+"Denver Broncos", "Kansas City Chiefs", "Las Vegas Raiders", "Los Angeles Chargers", 
 "Dallas Cowboys", "New York Giants", "Philadelphia Eagles", "Washington Commanders", 
 "Chicago Bears", "Detroit Lions", "Green Bay Packers", "Minnesota Vikings", 
 "Atlanta Falcons", "Carolina Panthers", "New Orleans Saints", "Tampa Bay Buccaneers", 
@@ -23,12 +28,12 @@ const leagueTeams = {
 
   ],
   MLB: [
-    "Atlanta Braves", "Miami Marlins", "New York Mets", "Philadelphia Phillies", "Washington Nationals", 
-"Chicago Cubs", "Cincinnati Reds", "Milwaukee Brewers", "Pittsburgh Pirates", "St. Louis Cardinals", 
-"Arizona Diamondbacks", "Colorado Rockies", "Los Angeles Dodgers", "San Diego Padres", "San Francisco Giants", 
-"Baltimore Orioles", "Boston Red Sox", "New York Yankees", "Tampa Bay Rays", "Toronto Blue Jays", 
-"Chicago White Sox", "Cleveland Guardians", "Detroit Tigers", "Kansas City Royals", "Minnesota Twins", 
-"Houston Astros", "Los Angeles Angels", "Oakland Athletics", "Seattle Mariners", "Texas Rangers"
+   "Atlanta Braves", "Miami Marlins", "New York Mets", "Philadelphia Phillies", "Washington Nationals",
+  "Chicago Cubs", "Cincinnati Reds", "Milwaukee Brewers", "Pittsburgh Pirates", "St. Louis Cardinals",
+  "Arizona Diamondbacks", "Colorado Rockies", "Los Angeles Dodgers", "San Diego Padres", "San Francisco Giants",
+  "Baltimore Orioles", "Boston Red Sox", "New York Yankees", "Tampa Bay Rays", "Toronto Blue Jays",
+  "Chicago White Sox", "Cleveland Guardians", "Detroit Tigers", "Kansas City Royals", "Minnesota Twins",
+  "Houston Astros", "Los Angeles Angels", "Oakland Athletics", "Seattle Mariners", "Texas Rangers"
 
   ],
   NHL: [
@@ -104,7 +109,7 @@ const leagueVenues = {
     "Raymond James Stadium, Tampa, Florida",
     "Nissan Stadium, Nashville, Tennessee",
     "Commanders Field, Landover, Maryland",
-    "Intuit Dome, Ingliwood, Californoa"
+  
   ],
   MLB: [
     "Chase Field, Phoenix, Arizona",
@@ -288,6 +293,7 @@ const teamVenueMapping ={
   "Edmonton Oilers": "Rogers Place, Edmonton, Alberta, Canada",
   "Florida Panthers": "Amerant Bank Arena, Sunrise, Florida",
   "Los Angeles Kings": "Crypto.com Arena, Los Angeles, California",
+  "Vegas Golden Knights": "T-Mobile Arena, Paradise, Nevada",
   "Minnesota Wild": "Xcel Energy Center, Saint Paul, Minnesota",
   "Montreal Canadiens": "Bell Centre, Montreal, Quebec, Canada",
   "Nashville Predators": "Bridgestone Arena, Nashville, Tennessee",
@@ -391,6 +397,34 @@ function generateTickets(count = 30) {
 }
 
 // Modified generateMockGames function
+const locationAliases = {
+  "las vegas": ["las vegas", "paradise", "vegas", "henderson"],
+  "vegas": ["las vegas", "paradise", "vegas", "henderson"],
+  "los angeles": ["los angeles", "inglewood", "la"],
+  "la": ["los angeles", "inglewood", "la"],
+  "new york": ["new york", "ny", "nyc", "manhattan", "bronx", "queens", "brooklyn", "east rutherford", "elmont"],
+  "nyc": ["new york", "nyc", "bronx", "queens"],
+  "ny":["new york", "ny", "nyc", "manhattan", "bronx", "queens", "brooklyn", "east rutherford", "elmont"],
+  "washington dc": ["washington dc", "d.c.", "washington", "landover"],
+  "dc": ["washington dc", "d.c.", "washington", "landover"],
+  "miami": ["miami", "miami gardens", "florida"],
+  "boston": ["boston", "massachusetts"],
+  "chicago": ["chicago", "illinois"],
+  "phoenix": ["phoenix", "arizona"],
+  "nyg": ["new york", "ny", "giants", "metlife", "east rutherford"],
+  "brooklyn": ["brooklyn", "new york", "ny"],
+  "manhattan": ["manhattan", "ny", "new york"],
+  "bronx": ["bronx", "new york", "ny"],
+  "queens": ["queens", "new york", "ny"],
+  "elmont": ["elmont", "long island", "ny", "new york"]
+};
+
+function expandLocationSearch(input) {
+  if (!input) return [""];
+  const normalized = input.toLowerCase().trim();
+  return locationAliases[normalized] || [normalized];
+}
+
 function generateMockGames(searchParams) {
   const { team, date, location } = searchParams;
   
@@ -421,9 +455,9 @@ function generateMockGames(searchParams) {
     }
   }
   
-  // Generate 1-3 events for each applicable league
+  // Generate 1-10 events for each applicable league
   possibleLeagues.forEach(league => {
-    const eventCount = getRandomInt(1, 3);
+    const eventCount = getRandomInt(1, 10);
     
     for (let i = 0; i < eventCount; i++) {
       let teamPair;
@@ -452,41 +486,68 @@ if (team) {
 }
       // If location is specified, find teams that play in that location
       else if (location) {
-        const matchingVenues = leagueVenues[league].filter(v => 
-          v.toLowerCase().includes(location.toLowerCase())
-        );
+        const locationKeywords = expandLocationSearch(location);
+        const matchingVenues = leagueVenues[league].filter(v => {
+          const vLower = v.toLowerCase();
+          return locationKeywords.some(keyword => vLower.includes(keyword));
+        });
+        
+        console.log(`Searching for location: ${location}`);
+        console.log("Expanded keywords:", locationKeywords);
+        console.log("Venues in league:", leagueVenues[league]);
+        console.log("Matching venues:", matchingVenues);
         
         if (matchingVenues.length > 0) {
           venue = getRandomElement(matchingVenues);
-          
-          // Find teams that play in this venue
-          const homeTeamsForVenue = [];
-          Object.entries(teamVenueMapping).forEach(([team, venueLocation]) => {
-            if (venueLocation === venue && leagueTeams[league].includes(team)) {
-              homeTeamsForVenue.push(team);
-            }
-          });
-          
+      
+          // Find teams that play in this venue and match the league
+          let homeTeamsForVenue = Object.entries(teamVenueMapping)
+            .filter(([team, v]) => 
+              v === venue && leagueTeams[league].includes(team)
+            )
+            .map(([team]) => team);
+      
+          // If the user searched for a team, filter further
+          if (team) {
+            homeTeamsForVenue = homeTeamsForVenue.filter(t =>
+              t.toLowerCase().includes(team.toLowerCase())
+            );
+          }
+      
           if (homeTeamsForVenue.length > 0) {
             const homeTeam = getRandomElement(homeTeamsForVenue);
             const otherTeams = leagueTeams[league].filter(t => t !== homeTeam);
             const opponent = getRandomElement(otherTeams);
             teamPair = [homeTeam, opponent];
           } else {
-            // If no teams from this league play in this venue, skip this event
             shouldIncludeEvent = false;
           }
         } else {
-          // No matching venues in this league for this location
           shouldIncludeEvent = false;
         }
-      } 
-      // If neither team nor location specified, select a random team and its home venue
+      }
+      else if (team) {
+        const matchingTeams = leagueTeams[league].filter(leagueTeam =>
+          leagueTeam.toLowerCase().includes(team.toLowerCase())
+        );
+      
+        if (matchingTeams.length > 0) {
+          const selectedTeam = getRandomElement(matchingTeams);
+          const otherTeams = leagueTeams[league].filter(t => t !== selectedTeam);
+          const opponent = getRandomElement(otherTeams);
+          teamPair = [selectedTeam, opponent];
+      
+          // Use the home venue of the selected team
+          venue = teamVenueMapping[selectedTeam];
+        } else {
+          shouldIncludeEvent = false;
+        }
+      }
       else {
         teamPair = getRandomTeamPair(league);
         venue = teamVenueMapping[teamPair[0]];
       }
-      
+           
       // Only add the event if it should be included
       if (shouldIncludeEvent && venue) {
         // Use the specified date or generate a random one
@@ -580,44 +641,44 @@ function SearchBar({ filters, setFilters, onSearch }) {
 }
 
 function PriceRangeSlider({ minPrice, maxPrice, priceRange, setPriceRange }) {
+  const handleChange = (values) => {
+    setPriceRange(values);
+  };
+
   return (
     <div className="mt-4 mb-8">
-      <div className="mb-2 flex justify-between">
+      <div className="mb-4 flex justify-between">
         <span className="font-medium text-gray-700">Price Range:</span>
         <span className="text-blue-600">${priceRange[0]} - ${priceRange[1]}</span>
       </div>
-      <div className="px-2">
-        <div className="relative">
-          <div className="absolute rounded-md h-2 bg-gray-200 left-0 right-0 top-1/2 transform -translate-y-1/2"></div>
-          <input
-            type="range"
-            min={minPrice}
-            max={maxPrice}
-            value={priceRange[0]}
-            onChange={(e) => {
-              const value = parseInt(e.target.value);
-              if (value <= priceRange[1]) {
-                setPriceRange([value, priceRange[1]]);
-              }
-            }}
-            className="absolute w-full top-1/2 transform -translate-y-1/2 appearance-none bg-transparent pointer-events-auto z-10"
-            style={{ height: '20px' }}
-          />
-          <input
-            type="range"
-            min={minPrice}
-            max={maxPrice}
-            value={priceRange[1]}
-            onChange={(e) => {
-              const value = parseInt(e.target.value);
-              if (value >= priceRange[0]) {
-                setPriceRange([priceRange[0], value]);
-              }
-            }}
-            className="absolute w-full top-1/2 transform -translate-y-1/2 appearance-none bg-transparent pointer-events-auto z-20"
-            style={{ height: '20px' }}
-          />
-        </div>
+      <div className="px-2 py-4">
+        <Slider
+          range
+          min={minPrice}
+          max={maxPrice}
+          value={priceRange}
+          onChange={handleChange}
+          railStyle={{ backgroundColor: '#e5e7eb', height: 8 }}
+          trackStyle={[{ backgroundColor: '#ffbd59', height: 8 }]}
+          handleStyle={[
+            {
+              backgroundColor: 'white',
+              borderColor: '#ffbd59',
+              height: 20,
+              width: 20,
+              marginTop: -6,
+              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+            },
+            {
+              backgroundColor: 'white',
+              borderColor: '#ffbd59',
+              height: 20,
+              width: 20,
+              marginTop: -6,
+              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+            },
+          ]}
+        />
       </div>
     </div>
   );
@@ -652,7 +713,31 @@ function EventDetails({ event, onBack }) {
   const [minMaxPrices, setMinMaxPrices] = useState([0, 1000]);
   const [ticketQuantity, setTicketQuantity] = useState(2);
 
-  useEffect(() => {
+ 
+ const handleTicketSelect = (broker, tickets) => {
+  // Map of broker names to their homepages
+  const brokerWebsites = {
+    "Ticketmaster": "https://www.ticketmaster.com",
+    "StubHub": "https://www.stubhub.com",
+    "SeatGeek": "https://www.seatgeek.com",
+    "Vivid Seats": "https://www.vividseats.com",
+    "GameTime": "https://gametime.co",
+    "TickPick": "https://www.tickpick.com",
+    "TicketCity": "https://www.ticketcity.com",
+    "TicketNetwork": "https://www.ticketnetwork.com",
+    "AXS": "https://www.axs.com",
+    "Ticket Liquidator": "https://www.ticketliquidator.com"
+  };
+
+  // Get the website URL for the broker, or default to a generic site
+  const websiteUrl = brokerWebsites[broker] || "https://www.ticketmaster.com";
+  
+  // Open the broker's website in a new tab
+  window.open(websiteUrl, '_blank');
+};
+
+useEffect(() => {
+  // Existing useEffect code... useEffect(() => {
     if (event.tickets && event.tickets.length > 0) {
       const prices = event.tickets.map(ticket => ticket.price);
       const min = Math.min(...prices);
@@ -796,9 +881,12 @@ function EventDetails({ event, onBack }) {
                       {broker}
                     </span>
                   </p>
-                  <button className="bg-green-500 text-white px-4 py-2 rounded-md text-sm hover:bg-green-600 transition">
-                    Select {Math.min(ticketQuantity, tickets.length)} • ${totalPrice * Math.min(ticketQuantity, tickets.length)}
-                  </button>
+                  <button 
+  className="bg-green-500 text-white px-4 py-2 rounded-md text-sm hover:bg-green-600 transition"
+  onClick={() => handleTicketSelect(broker, tickets)}
+>
+  Select {Math.min(ticketQuantity, tickets.length)} • ${totalPrice * Math.min(ticketQuantity, tickets.length)}
+</button>
                 </div>
               </div>
             );
@@ -816,6 +904,18 @@ export default function Homepage() {
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showResults, setShowResults] = useState(false);
+  const [showClear, setShowClear] = useState(false); 
+  const [showScrollTop, setShowScrollTop] = useState(false); // ✅ Add this line
+  const resultsRef = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   function handleSearch() {
     console.log("Search initiated with filters:", filters);
@@ -825,6 +925,13 @@ export default function Homepage() {
     
     setFilteredEvents(results);
     setShowResults(true);
+    setShowClear(true);
+
+
+    if (resultsRef.current) {
+  resultsRef.current.scrollIntoView({ behavior: "smooth" });
+}
+
   }
 
   return (
@@ -834,7 +941,7 @@ export default function Homepage() {
         {!selectedEvent ? (
           <>
             <SearchBar filters={filters} setFilters={setFilters} onSearch={handleSearch} />
-            
+
             {showResults && (
               <>
                 {filteredEvents.length > 0 ? (
@@ -842,8 +949,28 @@ export default function Homepage() {
                     <p className="text-gray-600 mt-6 mb-2 ml-2">
                       Showing {filteredEvents.length} events matching your search
                     </p>
-                    <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-4 pb-20">
-                      {filteredEvents.map(event => (
+
+                    {showClear && (
+                      <div className="mb-4 ml-2">
+                        <button
+                          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
+                          onClick={() => {
+                            setFilters({ team: "", date: "", location: "" });
+                            setFilteredEvents([]);
+                            setShowResults(false);
+                            setShowClear(false);
+                          }}
+                        >
+                          Clear Search
+                        </button>
+                      </div>
+                    )}
+
+                    <div
+                      ref={resultsRef}
+                      className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-4 pb-20"
+                    >
+                      {filteredEvents.map((event) => (
                         <EventCard key={event.id} event={event} onSelect={setSelectedEvent} />
                       ))}
                     </div>
@@ -855,7 +982,7 @@ export default function Homepage() {
                 )}
               </>
             )}
-            
+
             {!showResults && (
               <div className="text-center mt-20 text-gray-500">
                 <p>Enter search criteria and click Search to find events</p>
@@ -866,6 +993,18 @@ export default function Homepage() {
           <EventDetails event={selectedEvent} onBack={() => setSelectedEvent(null)} />
         )}
       </div>
+
+      {showScrollTop && (
+  <button
+    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+    className="fixed bottom-6 right-6 flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-blue-700 transition duration-300 z-50"
+    aria-label="Return to top"
+  >
+    <span className="text-lg">⬆️</span>
+    <span className="text-sm font-medium">Return to Top</span>
+  </button>
+)}
+
     </div>
   );
 }
