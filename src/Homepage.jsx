@@ -467,86 +467,76 @@ function generateMockGames(searchParams) {
 // In the generateMockGames function, modify the team search logic:
 
 if (team) {
-  const matchingTeams = leagueTeams[league].filter(leagueTeam => 
+  const matchingTeams = leagueTeams[league].filter(leagueTeam =>
     leagueTeam.toLowerCase().includes(team.toLowerCase())
   );
-  
+
   if (matchingTeams.length > 0) {
     const selectedTeam = getRandomElement(matchingTeams);
     const otherTeams = leagueTeams[league].filter(t => t !== selectedTeam);
     const opponent = getRandomElement(otherTeams);
-    teamPair = [selectedTeam, opponent];
-    
-    // Use the home venue of the selected team
-    venue = teamVenueMapping[selectedTeam];
+
+    const isHome = Math.random() < 0.5;
+
+    if (isHome) {
+      teamPair = [selectedTeam, opponent];
+      venue = teamVenueMapping[selectedTeam];
+    } else {
+      teamPair = [opponent, selectedTeam];
+      venue = teamVenueMapping[opponent];
+    }
+
+    if (!venue) shouldIncludeEvent = false;
   } else {
-    // If no teams match in this league, we should skip this event entirely
     shouldIncludeEvent = false;
   }
 }
-      // If location is specified, find teams that play in that location
-      else if (location) {
-        const locationKeywords = expandLocationSearch(location);
-        const matchingVenues = leagueVenues[league].filter(v => {
-          const vLower = v.toLowerCase();
-          return locationKeywords.some(keyword => vLower.includes(keyword));
-        });
-        
-        console.log(`Searching for location: ${location}`);
-        console.log("Expanded keywords:", locationKeywords);
-        console.log("Venues in league:", leagueVenues[league]);
-        console.log("Matching venues:", matchingVenues);
-        
-        if (matchingVenues.length > 0) {
-          venue = getRandomElement(matchingVenues);
-      
-          // Find teams that play in this venue and match the league
-          let homeTeamsForVenue = Object.entries(teamVenueMapping)
-            .filter(([team, v]) => 
-              v === venue && leagueTeams[league].includes(team)
-            )
-            .map(([team]) => team);
-      
-          // If the user searched for a team, filter further
-          if (team) {
-            homeTeamsForVenue = homeTeamsForVenue.filter(t =>
-              t.toLowerCase().includes(team.toLowerCase())
-            );
-          }
-      
-          if (homeTeamsForVenue.length > 0) {
-            const homeTeam = getRandomElement(homeTeamsForVenue);
-            const otherTeams = leagueTeams[league].filter(t => t !== homeTeam);
-            const opponent = getRandomElement(otherTeams);
-            teamPair = [homeTeam, opponent];
-          } else {
-            shouldIncludeEvent = false;
-          }
-        } else {
-          shouldIncludeEvent = false;
-        }
-      }
-      else if (team) {
-        const matchingTeams = leagueTeams[league].filter(leagueTeam =>
-          leagueTeam.toLowerCase().includes(team.toLowerCase())
-        );
-      
-        if (matchingTeams.length > 0) {
-          const selectedTeam = getRandomElement(matchingTeams);
-          const otherTeams = leagueTeams[league].filter(t => t !== selectedTeam);
-          const opponent = getRandomElement(otherTeams);
-          teamPair = [selectedTeam, opponent];
-      
-          // Use the home venue of the selected team
-          venue = teamVenueMapping[selectedTeam];
-        } else {
-          shouldIncludeEvent = false;
-        }
-      }
-      else {
-        teamPair = getRandomTeamPair(league);
-        venue = teamVenueMapping[teamPair[0]];
-      }
+
+else if (location) {
+  const locationKeywords = expandLocationSearch(location);
+  const matchingVenues = leagueVenues[league].filter(v => {
+    const vLower = v.toLowerCase();
+    return locationKeywords.some(keyword => vLower.includes(keyword));
+  });
+
+  console.log(`Searching for location: ${location}`);
+  console.log("Expanded keywords:", locationKeywords);
+  console.log("Venues in league:", leagueVenues[league]);
+  console.log("Matching venues:", matchingVenues);
+
+  if (matchingVenues.length > 0) {
+    venue = getRandomElement(matchingVenues);
+
+    let homeTeamsForVenue = Object.entries(teamVenueMapping)
+      .filter(([team, v]) =>
+        v === venue && leagueTeams[league].includes(team)
+      )
+      .map(([team]) => team);
+
+    if (team) {
+      homeTeamsForVenue = homeTeamsForVenue.filter(t =>
+        t.toLowerCase().includes(team.toLowerCase())
+      );
+    }
+
+    if (homeTeamsForVenue.length > 0) {
+      const homeTeam = getRandomElement(homeTeamsForVenue);
+      const otherTeams = leagueTeams[league].filter(t => t !== homeTeam);
+      const opponent = getRandomElement(otherTeams);
+      teamPair = [homeTeam, opponent];
+    } else {
+      shouldIncludeEvent = false;
+    }
+  } else {
+    shouldIncludeEvent = false;
+  }
+}
+
+else {
+  teamPair = getRandomTeamPair(league);
+  venue = teamVenueMapping[teamPair[0]];
+}
+
            
       // Only add the event if it should be included
       if (shouldIncludeEvent && venue) {
