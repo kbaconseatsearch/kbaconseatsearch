@@ -427,124 +427,153 @@ function expandLocationSearch(input) {
 
 function generateMockGames(searchParams) {
   const { team, date, location } = searchParams;
-  
-  // Check if all search fields are empty
+
   if (!team && !date && !location) {
-    return []; // Return empty array to indicate no events found
+    return [];
   }
-  
+
   const results = [];
   const leagues = ["NBA", "NFL", "MLB", "NHL"];
-  
-  // Create a unique search ID to prevent ID collisions across searches
   const searchId = Date.now();
-  
-  // Determine which leagues might contain the searched team
+
   let possibleLeagues = [...leagues];
-  
+
   if (team) {
-    possibleLeagues = leagues.filter(league => 
-      leagueTeams[league].some(leagueTeam => 
+    possibleLeagues = leagues.filter(league =>
+      leagueTeams[league].some(leagueTeam =>
         leagueTeam.toLowerCase().includes(team.toLowerCase())
       )
     );
-    
-    // If no matching leagues found, generate for all leagues
+
     if (possibleLeagues.length === 0) {
       possibleLeagues = [...leagues];
     }
   }
-  
-  // Generate 1-10 events for each applicable league
+
   possibleLeagues.forEach(league => {
     const eventCount = getRandomInt(1, 10);
-    
+
     for (let i = 0; i < eventCount; i++) {
       let teamPair;
       let venue;
       let shouldIncludeEvent = true;
-      
-// In the generateMockGames function, modify the team search logic:
 
-if (team) {
-  const matchingTeams = leagueTeams[league].filter(leagueTeam =>
-    leagueTeam.toLowerCase().includes(team.toLowerCase())
-  );
+      if (team) {
+        const matchingTeams = leagueTeams[league].filter(leagueTeam =>
+          leagueTeam.toLowerCase().includes(team.toLowerCase())
+        );
 
-  if (matchingTeams.length > 0) {
-    const selectedTeam = getRandomElement(matchingTeams);
-    const otherTeams = leagueTeams[league].filter(t => t !== selectedTeam);
-    const opponent = getRandomElement(otherTeams);
+        if (matchingTeams.length > 0) {
+          const selectedTeam = getRandomElement(matchingTeams);
+          const otherTeams = leagueTeams[league].filter(t => t !== selectedTeam);
+          const opponent = getRandomElement(otherTeams);
+          const isHome = Math.random() < 0.5;
 
-    const isHome = Math.random() < 0.5;
+          teamPair = isHome
+            ? [selectedTeam, opponent]
+            : [opponent, selectedTeam];
 
-    if (isHome) {
-      teamPair = [selectedTeam, opponent];
-      venue = teamVenueMapping[selectedTeam];
-    } else {
-      teamPair = [opponent, selectedTeam];
-      venue = teamVenueMapping[opponent];
-    }
+          venue = isHome
+            ? teamVenueMapping[selectedTeam]
+            : teamVenueMapping[opponent];
 
-    if (!venue) shouldIncludeEvent = false;
-  } else {
-    shouldIncludeEvent = false;
-  }
-}
+          if (!venue) shouldIncludeEvent = false;
+        } else {
+          shouldIncludeEvent = false;
+        }
+      } else if (location) {
+        const locationKeywords = expandLocationSearch(location);
+        const explicitVenueAliases = {
+          "la": ["los angeles"],
+          "los angeles": ["los angeles"],
+          "ny": ["new york", "brooklyn"],
+          "new york": ["new york", "brooklyn"],
+        };
 
-else if (location) {
-  const locationKeywords = expandLocationSearch(location);
-  const matchingVenues = leagueVenues[league].filter(v => {
-    const vLower = v.toLowerCase();
-    return locationKeywords.some(keyword => vLower.includes(keyword));
-  });
+        const matchedCityKeywords = explicitVenueAliases[location.toLowerCase().trim()] || locationKeywords;
 
-  console.log(`Searching for location: ${location}`);
-  console.log("Expanded keywords:", locationKeywords);
-  console.log("Venues in league:", leagueVenues[league]);
-  console.log("Matching venues:", matchingVenues);
+        const cityTeams = leagues.flatMap(league =>
+          leagueTeams[league].filter(teamName =>
+            matchedCityKeywords.some(cityKeyword =>
+              teamName.toLowerCase().includes(cityKeyword)
+            )
+          ).map(team => ({ team, league }))
+        );
 
-  if (matchingVenues.length > 0) {
-    venue = getRandomElement(matchingVenues);
+        if (cityTeams.length > 0) {
+          cityTeams.forEach(({ team: selectedCityTeam, league }) => {
+            const eventCountPerTeam = getRandomInt(2, 5);
 
-    let homeTeamsForVenue = Object.entries(teamVenueMapping)
-      .filter(([team, v]) =>
-        v === venue && leagueTeams[league].includes(team)
-      )
-      .map(([team]) => team);
+            for (let i = 0; i < eventCountPerTeam; i++) {
+              const opponents = leagueTeams[league].filter(t => t !== selectedCityTeam);
+              const selectedOpponent = getRandomElement(opponents);
+              const isHomeGame = Math.random() < 0.5;
 
-    if (team) {
-      homeTeamsForVenue = homeTeamsForVenue.filter(t =>
-        t.toLowerCase().includes(team.toLowerCase())
-      );
-    }
+              teamPair = isHomeGame
+                ? [selectedCityTeam, selectedOpponent]
+                : [selectedOpponent, selectedCityTeam];
 
-    if (homeTeamsForVenue.length > 0) {
-      const homeTeam = getRandomElement(homeTeamsForVenue);
-      const otherTeams = leagueTeams[league].filter(t => t !== homeTeam);
-      const opponent = getRandomElement(otherTeams);
-      teamPair = [homeTeam, opponent];
-    } else {
-      shouldIncludeEvent = false;
-    }
-  } else {
-    shouldIncludeEvent = false;
-  }
-}
+              venue = isHomeGame
+                ? teamVenueMapping[selectedCityTeam]
+                : teamVenueMapping[selectedOpponent];
 
-else {
-  teamPair = getRandomTeamPair(league);
-  venue = teamVenueMapping[teamPair[0]];
-}
+              if (venue) {
+                const eventDate = date || generateFutureDate();
+                results.push({
+                  id: `${searchId}-${league}-${selectedCityTeam}-${i}`,
+                  teams: teamPair,
+                  date: eventDate,
+                  location: venue,
+                  league: league,
+                  tickets: generateTickets(getRandomInt(20, 30))
+                });
+              }
+            }
+          });
+        } else {
+          const matchingVenues = leagues.flatMap(league =>
+            leagueVenues[league].filter(v => {
+              const normalizedVenue = v.toLowerCase().replace(/[^\w\s]/gi, '').trim();
+              return matchedCityKeywords.some(cityKeyword =>
+                normalizedVenue.includes(cityKeyword)
+              );
+            })
+          );
 
-           
-      // Only add the event if it should be included
+          matchingVenues.forEach(venue => {
+            const homeTeams = Object.entries(teamVenueMapping)
+              .filter(([team, v]) => v === venue)
+              .map(([team]) => team);
+
+            if (homeTeams.length > 0) {
+              const homeTeam = getRandomElement(homeTeams);
+              const league = leagues.find(l => leagueTeams[l].includes(homeTeam));
+              const opponents = leagueTeams[league].filter(t => t !== homeTeam);
+              const opponent = getRandomElement(opponents);
+
+              const eventDate = date || generateFutureDate();
+
+              results.push({
+                id: `${searchId}-${league}-${venue}-${homeTeam}`,
+                teams: [homeTeam, opponent],
+                date: eventDate,
+                location: venue,
+                league: league,
+                tickets: generateTickets(getRandomInt(20, 30))
+              });
+            }
+          });
+        }
+        continue;  // skip the remaining logic for location searches
+      } else {
+        teamPair = getRandomTeamPair(league);
+        venue = teamVenueMapping[teamPair[0]];
+      }
+
       if (shouldIncludeEvent && venue) {
-        // Use the specified date or generate a random one
         const eventDate = date || generateFutureDate();
-        
         results.push({
-          id: `${searchId}-${league}-${i}`,
+          id: `${searchId}-${league}-${teamPair[0]}-${i}`,
           teams: teamPair,
           date: eventDate,
           location: venue,
@@ -554,9 +583,11 @@ else {
       }
     }
   });
-  
+
   return results;
 }
+
+
 
 function Navbar() {
   return (
@@ -789,34 +820,36 @@ useEffect(() => {
   });
 
   return (
-    <div className="bg-white p-6 shadow-lg rounded-lg max-w-3xl mx-auto mt-10">
-      <button className="text-blue-600 font-semibold mb-4" onClick={onBack}>&larr; Back to Events</button>
-      <h2 className="text-2xl font-bold">{event.teams.join(" vs. ")}</h2>
-      <p className="text-gray-600">📅 {event.date} | 📍 {event.location}</p>
-      <p className="text-blue-600 text-sm mt-1">{event.league}</p>
-      
-      <div className="mt-4 flex flex-wrap gap-4">
-        <select onChange={(e) => setSortOrder(e.target.value)} className="border p-2 rounded">
+  <div className="bg-white p-6 shadow-lg rounded-lg max-w-7xl mx-auto mt-10">
+    <button className="text-blue-600 font-semibold mb-4" onClick={onBack}>&larr; Back to Events</button>
+    <h2 className="text-2xl font-bold">{event.teams.join(" vs. ")}</h2>
+    <p className="text-gray-600">📅 {event.date} | 📍 {event.location}</p>
+    <p className="text-blue-600 text-sm mt-1">{event.league}</p>
+
+    <div className="mt-6 flex flex-col lg:flex-row gap-6">
+      {/* Filters Sidebar */}
+      <div className="w-full lg:w-1/3 bg-gray-50 p-4 rounded-lg border border-gray-200">
+        <h3 className="text-lg font-semibold mb-4">Filter Tickets</h3>
+
+        <select onChange={(e) => setSortOrder(e.target.value)} className="border p-2 rounded w-full mb-4">
           <option value="lowToHigh">Sort: Price Low to High</option>
           <option value="highToLow">Sort: Price High to Low</option>
           <option value="sectionLowToHigh">Sort: Section Low to High</option>
           <option value="sectionHighToLow">Sort: Section High to Low</option>
         </select>
-        
-        {/* Real-time section filter */}
+
         <input 
           type="text" 
           placeholder="Filter by section" 
-          className="border p-2 rounded" 
+          className="border p-2 rounded w-full mb-4" 
           value={filterSection} 
           onChange={(e) => setFilterSection(e.target.value)} 
         />
-        
-        {/* Ticket quantity filter */}
+
         <select 
           value={ticketQuantity} 
           onChange={(e) => setTicketQuantity(parseInt(e.target.value))} 
-          className="border p-2 rounded"
+          className="border p-2 rounded w-full mb-4"
         >
           <option value="1">1 Ticket</option>
           <option value="2">2 Tickets</option>
@@ -824,69 +857,70 @@ useEffect(() => {
           <option value="4">4 Tickets</option>
           <option value="5">5+ Tickets</option>
         </select>
+
+        <PriceRangeSlider 
+          minPrice={minMaxPrices[0]} 
+          maxPrice={minMaxPrices[1]} 
+          priceRange={priceRange} 
+          setPriceRange={setPriceRange} 
+        />
       </div>
-      
-      {/* Price Range Slider */}
-      <PriceRangeSlider 
-        minPrice={minMaxPrices[0]} 
-        maxPrice={minMaxPrices[1]} 
-        priceRange={priceRange} 
-        setPriceRange={setPriceRange} 
-      />
-      
-      <div className="flex justify-between items-center mt-4">
-        <h3 className="text-lg font-semibold">Available Tickets:</h3>
-        <p className="text-sm text-gray-600">
-          {filteredGroups.length} listings • {filteredTickets.length} tickets
-        </p>
-      </div>
-      
-      {filteredGroups.length > 0 ? (
-        <div className="mt-2 space-y-4">
-          {filteredGroups.map(([groupId, tickets]) => {
-            const broker = tickets[0].broker;
-            const brokerFee = tickets[0].brokerFee;
-            
-            // Calculate service fee display
-            const serviceFee = Math.round(tickets[0].price * brokerFee);
-            const totalPrice = tickets[0].price + serviceFee;
-            
-            return (
-              <div key={groupId} className="bg-gray-100 p-4 rounded-md shadow-sm border border-gray-200">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-medium text-gray-700">Section {tickets[0].section}, Row {tickets[0].row}</p>
-                    <p className="text-gray-600 text-sm mt-1">
-                      {tickets.length} tickets available • Seats {tickets[0].seat} - {tickets[tickets.length-1].seat}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-gray-900">${tickets[0].price}/ea</p>
-                    <p className="text-xs text-gray-500">+${serviceFee} fee</p>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center mt-3">
-                  <p className="text-blue-600 font-medium text-sm flex items-center">
-                    <span className="bg-blue-100 text-blue-800 text-xs py-1 px-2 rounded-full mr-2">
-                      {broker}
-                    </span>
-                  </p>
-                  <button 
-  className="bg-green-500 text-white px-4 py-2 rounded-md text-sm hover:bg-green-600 transition"
-  onClick={() => handleTicketSelect(broker, tickets)}
->
-  Select {Math.min(ticketQuantity, tickets.length)} • ${totalPrice * Math.min(ticketQuantity, tickets.length)}
-</button>
-                </div>
-              </div>
-            );
-          })}
+
+      {/* Ticket Results Section */}
+      <div className="w-full lg:w-2/3">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold">Available Tickets:</h3>
+          <p className="text-sm text-gray-600">
+            {filteredGroups.length} listings • {filteredTickets.length} tickets
+          </p>
         </div>
-      ) : (
-        <p className="text-red-500 mt-2">No tickets match your filters. Try adjusting your criteria.</p>
-      )}
+
+        {filteredGroups.length > 0 ? (
+          <div className="space-y-4">
+            {filteredGroups.map(([groupId, tickets]) => {
+              const broker = tickets[0].broker;
+              const brokerFee = tickets[0].brokerFee;
+              const serviceFee = Math.round(tickets[0].price * brokerFee);
+              const totalPrice = tickets[0].price + serviceFee;
+
+              return (
+                <div key={groupId} className="bg-gray-100 p-4 rounded-md shadow-sm border border-gray-200">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="font-medium text-gray-700">Section {tickets[0].section}, Row {tickets[0].row}</p>
+                      <p className="text-gray-600 text-sm mt-1">
+                        {tickets.length} tickets available • Seats {tickets[0].seat} - {tickets[tickets.length-1].seat}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-gray-900">${tickets[0].price}/ea</p>
+                      <p className="text-xs text-gray-500">+${serviceFee} fee</p>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center mt-3">
+                    <p className="text-blue-600 font-medium text-sm flex items-center">
+                      <span className="bg-blue-100 text-blue-800 text-xs py-1 px-2 rounded-full mr-2">
+                        {broker}
+                      </span>
+                    </p>
+                    <button 
+                      className="bg-green-500 text-white px-4 py-2 rounded-md text-sm hover:bg-green-600 transition"
+                      onClick={() => handleTicketSelect(broker, tickets)}
+                    >
+                      Select {Math.min(ticketQuantity, tickets.length)} • ${totalPrice * Math.min(ticketQuantity, tickets.length)}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="text-red-500 mt-2">No tickets match your filters. Try adjusting your criteria.</p>
+        )}
+      </div>
     </div>
-  );
+  </div>
+);
 }
 
 export default function Homepage() {
@@ -908,11 +942,16 @@ export default function Homepage() {
   }, []);
 
   function handleSearch() {
-    console.log("Search initiated with filters:", filters);
-    // Generate mock data based on search filters
-    const results = generateMockGames(filters);
+    const cleanedFilters = {
+      team: filters.team.trim().toLowerCase(),
+      location: filters.location.trim().toLowerCase(),
+      date: filters.date
+    };
+  
+    console.log("Search initiated with filters:", cleanedFilters);
+    const results = generateMockGames(cleanedFilters);
     console.log("Generated Events:", results);
-    
+  
     setFilteredEvents(results);
     setShowResults(true);
     setShowClear(true);
