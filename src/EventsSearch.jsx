@@ -1,0 +1,111 @@
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+
+const EventsSearch = ({ teamName, startDate, endDate }) => {
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  const fetchEvents = async (pageToFetch = 1) => {
+    try {
+      const query = `?start=${startDate}&end=${endDate}&team=${encodeURIComponent(teamName)}&page=${pageToFetch}`;
+      const response = await fetch(`/api/events/search${query}`);
+      const data = await response.json();
+
+      const formatted = (data.results || []).map((event) => ({
+        id: event.event_id,
+        name: event.name,
+        date: new Date(event.date).toLocaleString(undefined, {
+          weekday: 'short',
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        venue: `${event.venue.name} — ${event.venue.location}`,
+        lowestPrice: event.lowestPrice ?? null
+      }));
+
+      if (pageToFetch === 1) {
+        setEvents(formatted);
+      } else {
+        setEvents((prev) => [...prev, ...formatted]);
+      }
+
+      if (formatted.length < 10) {
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error('Failed to fetch events:', error);
+    } finally {
+      setLoading(false);
+      setIsLoadingMore(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!startDate || !endDate) return;
+
+    setLoading(true);
+    setPage(1);
+    setHasMore(true);
+    fetchEvents(1);
+  }, [teamName, startDate, endDate]);
+
+  const handleLoadMore = () => {
+    const nextPage = page + 1;
+    setIsLoadingMore(true);
+    setPage(nextPage);
+    fetchEvents(nextPage);
+  };
+
+  if (loading) {
+    return <p className="text-center mt-4 text-gray-600">Loading events...</p>;
+  }
+
+  if (!events.length) {
+    return <p className="text-center mt-4 text-gray-600">No events found.</p>;
+  }
+
+  return (
+    <div className="mt-8 space-y-4">
+      {events.map((event) => (
+        <div
+          key={event.id}
+          className="bg-white border border-gray-200 rounded-lg p-4 shadow flex flex-col sm:flex-row sm:items-center sm:justify-between hover:shadow-md transition-shadow"
+        >
+          <div className="mb-2 sm:mb-0">
+            <h3 className="text-lg font-semibold text-gray-900">{event.name}</h3>
+            <p className="text-sm text-gray-600">
+              {event.date} @ {event.venue}
+            </p>
+          </div>
+          <Link
+            to={`/event/${event.id}`}
+            state={{ event }}
+            className="inline-block mt-2 sm:mt-0 bg-[#fea709] hover:bg-[#e89c06] text-white text-sm font-semibold px-4 py-2 rounded shadow"
+          >
+            {event.lowestPrice ? `Buy Tickets from $${event.lowestPrice.toFixed(2)}` : 'Buy Tickets'}
+          </Link>
+        </div>
+      ))}
+
+      {hasMore && (
+        <div className="text-center mt-6">
+          <button
+            onClick={handleLoadMore}
+            disabled={isLoadingMore}
+            className="bg-[#fea709] hover:bg-[#e89c06] text-white font-semibold px-6 py-3 rounded shadow"
+          >
+            {isLoadingMore ? 'Loading...' : 'Load More Events'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default EventsSearch;

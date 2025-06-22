@@ -1,0 +1,3 @@
+overrides:
+  seatmaps-client: link:../Library/pnpm/global/5/node_modules/@ticketevolution/seatmaps-client
+  '@ticketevolution/seatmaps-client': link:../Library/pnpm/global/5/node_modules/@ticketevolution/seatmaps-client

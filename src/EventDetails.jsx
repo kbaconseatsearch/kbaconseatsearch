@@ -1,0 +1,200 @@
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import SeatMap from '../seatmaps-client/packages/seatmaps-client/src/components/SeatMap.tsx';
+
+const EventDetails = () => {
+  const { id } = useParams();
+  const [event, setEvent] = useState(null);
+  const [tickets, setTickets] = useState([]);
+  const [filteredTickets, setFilteredTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [sortOption, setSortOption] = useState('priceLow');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [minQuantity, setMinQuantity] = useState('1');
+
+  useEffect(() => {
+    const fetchEventAndTickets = async () => {
+      try {
+        const eventRes = await fetch(`/api/events/${id}`);
+        const eventData = await eventRes.json();
+        setEvent(eventData);
+
+        const ticketRes = await fetch(`/api/events/${id}/listings`);
+        const ticketData = await ticketRes.json();
+        setTickets(ticketData.listings || []);
+        setFilteredTickets(ticketData.listings || []);
+      } catch (err) {
+        console.error('Error fetching event or tickets:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEventAndTickets();
+  }, [id]);
+
+  const applyFilters = () => {
+    let filtered = [...tickets];
+
+    // 🧮 Filter by quantity first
+    filtered = filtered.filter(
+      (t) => Number(t.quantity ?? 1) >= parseInt(minQuantity)
+    );
+
+    // 💰 Then filter by price
+    if (minPrice) {
+      filtered = filtered.filter(
+        (t) => Number(t.retail_price_inclusive ?? t.retail_price) >= parseFloat(minPrice)
+      );
+    }
+    if (maxPrice) {
+      filtered = filtered.filter(
+        (t) => Number(t.retail_price_inclusive ?? t.retail_price) <= parseFloat(maxPrice)
+      );
+    }
+
+    setFilteredTickets(filtered);
+  };
+
+  const sortedTickets = [...filteredTickets].sort((a, b) => {
+    const priceA = Number(a.retail_price_inclusive ?? a.retail_price);
+    const priceB = Number(b.retail_price_inclusive ?? b.retail_price);
+    const sectionA = a.section ?? '';
+    const sectionB = b.section ?? '';
+
+    switch (sortOption) {
+      case 'priceLow':
+        return priceA - priceB;
+      case 'priceHigh':
+        return priceB - priceA;
+      case 'sectionAZ':
+        return sectionA.localeCompare(sectionB);
+      case 'sectionZA':
+        return sectionB.localeCompare(sectionA);
+      default:
+        return 0;
+    }
+  });
+
+  if (loading) return <div className="text-center mt-10">Loading event...</div>;
+  if (!event) return <div className="text-center mt-10">Event not found.</div>;
+
+  return (
+    <div className="max-w-screen-xl mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-1">{event.name}</h1>
+      <p className="text-gray-600 mb-6">
+        {new Date(event.occurs_at).toLocaleString()} @ {event.venue?.name}, {event.venue?.location}
+      </p>
+
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* 🗺️ Seat Map on Left */}
+        <div className="lg:w-2/3 w-full border rounded shadow p-2">
+          {event.configuration?.id && event.venue?.id && (
+            <SeatMap
+              configurationId={event.configuration.id}
+              venueId={event.venue.id}
+              ticketGroups={tickets}
+            />
+          )}
+        </div>
+
+        {/* 🎟️ Tickets on Right */}
+        <div className="lg:w-1/3 w-full border rounded shadow p-4">
+          <h2 className="text-xl font-semibold mb-4">Available Tickets</h2>
+
+          {/* 🔢 Quantity Filter */}
+          <div className="mb-4">
+            <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">
+              Number of Tickets:
+            </label>
+            <select
+              id="quantity"
+              value={minQuantity}
+              onChange={(e) => setMinQuantity(e.target.value)}
+              className="w-full border border-gray-300 rounded px-2 py-1 shadow-sm"
+            >
+              {[...Array(18)].map((_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  {i + 1} Ticket{i > 0 ? 's' : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* 💰 Price Filter */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Filter by price:</label>
+            <div className="flex gap-2 mb-2">
+              <input
+                type="number"
+                placeholder="Min"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+                className="w-1/2 border border-gray-300 rounded px-2 py-1 shadow-sm"
+              />
+              <input
+                type="number"
+                placeholder="Max"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                className="w-1/2 border border-gray-300 rounded px-2 py-1 shadow-sm"
+              />
+            </div>
+            <button
+              onClick={applyFilters}
+              className="bg-[#fea709] hover:bg-[#e89c06] text-white font-semibold px-4 py-2 rounded shadow w-full"
+            >
+              Apply Filters
+            </button>
+          </div>
+
+          {/* 🔽 Sorting */}
+          <div className="mb-4">
+            <label htmlFor="sort" className="block text-sm font-medium text-gray-700 mb-1">
+              Sort by:
+            </label>
+            <select
+              id="sort"
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+              className="w-full border border-gray-300 rounded px-2 py-1 shadow-sm"
+            >
+              <option value="priceLow">Price: Low to High</option>
+              <option value="priceHigh">Price: High to Low</option>
+              <option value="sectionAZ">Section: A–Z</option>
+              <option value="sectionZA">Section: Z–A</option>
+            </select>
+          </div>
+
+          {/* 🎫 Ticket Listings */}
+          {sortedTickets.length === 0 ? (
+            <p className="text-gray-500">No tickets match your filters.</p>
+          ) : (
+         <ul className="space-y-3 overflow-y-auto max-h-[650px] pr-1">
+  {sortedTickets.map((ticket, index) => (
+    <li key={index} className="border rounded px-3 py-2 shadow-sm">
+      <div className="text-sm font-semibold text-gray-800">
+        {ticket.section} • Row {ticket.row}
+      </div>
+      <div className="text-blue-600 font-bold">
+        ${(ticket.retail_price_inclusive ?? ticket.retail_price).toFixed(2)}
+      </div>
+      <div className="text-xs text-gray-500">
+        {ticket.delivery_type || 'Resale Ticket'} • {ticket.quantity} Ticket
+        {ticket.quantity > 1 ? 's' : ''}
+      </div>
+      <div className="text-xs text-gray-400">
+        Broker: {ticket.broker ?? 'Unknown'}
+      </div>
+    </li>
+  ))}
+</ul>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default EventDetails;
