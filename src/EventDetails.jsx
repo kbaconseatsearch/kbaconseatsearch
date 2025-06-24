@@ -113,16 +113,7 @@ filtered = filtered.filter((ticket) => {
     <div className="max-w-screen-xl mx-auto p-4">
       <div className="flex justify-between items-center mb-1">
         <h1 className="text-2xl font-bold">{event.name}</h1>
-        {event.id && (
-          <a
-            href={`https://checkout.seatsearchpro.com/events/${event.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-[#fea709] hover:bg-[#e89c06] text-white font-semibold px-4 py-2 rounded shadow"
-          >
-            View Tickets
-          </a>
-        )}
+       
       </div>
       <p className="text-gray-600 mb-6">
         {new Date(event.occurs_at).toLocaleString()} @ {event.venue?.name}, {event.venue?.location}
