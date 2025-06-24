@@ -63,7 +63,15 @@ const EventsSearch = ({ teamName, startDate, endDate }) => {
   };
 
   if (loading) {
-    return <p className="text-center mt-4 text-gray-600">Loading events...</p>;
+    return (
+      <div className="flex justify-center items-center h-[60vh]">
+        <img
+          src="/logos/seatsearchpro-logo-no-writing.png"
+          alt="Loading"
+          className="w-32 h-32 animate-spin-slow"
+        />
+      </div>
+    );
   }
 
   if (!events.length) {
@@ -98,9 +106,16 @@ const EventsSearch = ({ teamName, startDate, endDate }) => {
           <button
             onClick={handleLoadMore}
             disabled={isLoadingMore}
-            className="bg-[#fea709] hover:bg-[#e89c06] text-white font-semibold px-6 py-3 rounded shadow"
+            className="bg-[#fea709] hover:bg-[#e89c06] text-white font-semibold px-6 py-3 rounded shadow flex items-center justify-center gap-2"
           >
-            {isLoadingMore ? 'Loading...' : 'Load More Events'}
+            {isLoadingMore && (
+              <img
+                src="/logos/seatsearchpro-logo-no-writing.png"
+                alt="Loading more"
+                className="w-5 h-5 animate-spin-slow"
+              />
+            )}
+            {isLoadingMore ? 'Loading More...' : 'Load More Events'}
           </button>
         </div>
       )}

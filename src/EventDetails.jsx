@@ -67,11 +67,19 @@ const EventDetails = () => {
     }
   });
 
-  if (loading) return <div className="text-center mt-10">Loading event...</div>;
-  if (!event) return <div className="text-center mt-10">Event not found.</div>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-[60vh]">
+        <img
+          src="/logos/seatsearchpro-logo-no-writing.png"
+          alt="Loading"
+          className="w-40 h-40 animate-spin-slow"
+        />
+      </div>
+    );
+  }
 
-  console.log('SeatMap configId:', event.configuration?.id);
-  console.log('SeatMap venueId:', event.venue?.id);
+  if (!event) return <div className="text-center mt-10">Event not found.</div>;
 
   return (
     <div className="max-w-screen-xl mx-auto p-4">
@@ -198,20 +206,20 @@ const EventDetails = () => {
 
         {/* 🗺️ Seat Map on Right */}
         <div className="lg:w-2/3 w-full border rounded shadow p-2">
-  {event.configuration?.id && event.venue?.id ? (
-    <div id="seat-map">
-      <SeatMap
-        configurationId={event.configuration.id}
-        venueId={event.venue.id}
-        ticketGroups={tickets}
-        showControls
-        showLegend
-      />
-    </div>
-  ) : (
-    <p className="text-gray-500">Seat map not available.</p>
-  )}
-</div>
+          {event.configuration?.id && event.venue?.id ? (
+            <div id="seat-map">
+              <SeatMap
+                configurationId={event.configuration.id}
+                venueId={event.venue.id}
+                ticketGroups={tickets}
+                showControls
+                showLegend
+              />
+            </div>
+          ) : (
+            <p className="text-gray-500">Seat map not available.</p>
+          )}
+        </div>
       </div>
     </div>
   );
