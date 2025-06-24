@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import SeatMap from '../seatmaps-client/packages/seatmaps-client/src/components/SeatMap.tsx';
+import { mlbVenueTimezones } from '../tools/timezones';
 
 const EventDetails = () => {
   const { id } = useParams();
@@ -20,7 +21,8 @@ const EventDetails = () => {
         const eventRes = await fetch(`/api/events/${id}`);
         const eventData = await eventRes.json();
         setEvent(eventData);
-
+        console.log('📅 Raw occurs_at:', eventData.occurs_at);
+        console.log('🕒 Parsed Date:', new Date(eventData.occurs_at));
         const ticketRes = await fetch(`/api/events/${id}/listings?include_tevo_section_mappings=true`);
         const ticketData = await ticketRes.json();
         setTickets(ticketData.listings || []);
@@ -115,9 +117,18 @@ filtered = filtered.filter((ticket) => {
         <h1 className="text-2xl font-bold">{event.name}</h1>
        
       </div>
-      <p className="text-gray-600 mb-6">
-        {new Date(event.occurs_at).toLocaleString()} @ {event.venue?.name}, {event.venue?.location}
-      </p>
+     <p className="text-gray-600 mb-6">
+  {(() => {
+    const rawDate = event.occurs_at_local ?? event.occurs_at;
+    const tz = event.venue?.time_zone ?? 'America/New_York';
+    return new Date(rawDate).toLocaleString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      timeZone: tz,
+      timeZoneName: 'short'
+    });
+  })()} @ {event.venue?.name}, {event.venue?.location}
+</p>
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* 🎟️ Ticket Filter and List */}
@@ -233,7 +244,7 @@ filtered = filtered.filter((ticket) => {
         <div className="lg:w-2/3 w-full border rounded shadow p-2">
           {event.configuration?.id && event.venue?.id ? (
             <div id="seat-map">
-              <SeatMap
+             <SeatMap
   configurationId={event.configuration.id}
   venueId={event.venue.id}
   ticketGroups={tickets}

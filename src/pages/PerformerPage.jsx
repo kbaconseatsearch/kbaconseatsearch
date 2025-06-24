@@ -56,7 +56,7 @@ const PerformerPage = () => {
             <li key={event.id} className="border p-4 rounded shadow">
               <div className="font-medium text-lg">{event.name}</div>
               <div className="text-sm text-gray-600">
-        {new Date(event.occurs_at).toLocaleString('en-US', {
+        {new Date(event.occurs_at_local).toLocaleString('en-US', {
              weekday: 'long',
             month: 'long',
             day: 'numeric',

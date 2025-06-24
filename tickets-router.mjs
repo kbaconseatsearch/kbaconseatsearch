@@ -116,11 +116,12 @@ const listingsQuery = `event_id=${eventId}&include_tevo_section_mappings=true`; 
         return {
           event_id: eventId,
           name: event.name,
-          date: event.occurs_at,
+          date: event.occurs_at_local ?? event.occurs_at,
           venue: {
-            name: event.venue?.name ?? '',
-            location: event.venue?.location ?? '',
-          },
+  name: event.venue?.name ?? '',
+  location: event.venue?.location ?? '',
+  time_zone: event.venue?.time_zone ?? null,
+},
           configuration: event.configuration,
           lowestPrice: prices.length ? Math.min(...prices) : null
         };
@@ -129,11 +130,12 @@ const listingsQuery = `event_id=${eventId}&include_tevo_section_mappings=true`; 
         return {
           event_id: eventId,
           name: event.name,
-          date: event.occurs_at,
+          date: event.occurs_at_local,
           venue: {
-            name: event.venue?.name ?? '',
-            location: event.venue?.location ?? '',
-          },
+  name: event.venue?.name ?? '',
+  location: event.venue?.location ?? '',
+  time_zone: event.venue?.time_zone ?? null,
+},
           configuration: event.configuration,
           lowestPrice: null
         };

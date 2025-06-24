@@ -8,26 +8,74 @@ const EventsSearch = ({ teamName, startDate, endDate }) => {
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
+  const fallbackZones = {
+    'Los Angeles, CA': 'America/Los_Angeles',
+    'Denver, CO': 'America/Denver',
+    'Kansas City, MO': 'America/Chicago',
+    'Chicago, IL': 'America/Chicago',
+    'New York, NY': 'America/New_York',
+    'San Diego, CA': 'America/Los_Angeles',
+    'Phoenix, AZ': 'America/Phoenix',
+    'Miami, FL': 'America/New_York',
+    // Add more known fallback zones here as needed
+  };
+
+  const isValidIANAZone = (tz) => {
+    try {
+      Intl.DateTimeFormat(undefined, { timeZone: tz });
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const fetchEvents = async (pageToFetch = 1) => {
     try {
-      const query = `?start=${startDate}&end=${endDate}&team=${encodeURIComponent(teamName)}&page=${pageToFetch}`;
+      const query = `?start=${startDate}&end=${endDate}&team=${encodeURIComponent(
+        teamName
+      )}&page=${pageToFetch}`;
       const response = await fetch(`/api/events/search${query}`);
       const data = await response.json();
 
-      const formatted = (data.results || []).map((event) => ({
-        id: event.event_id,
-        name: event.name,
-        date: new Date(event.date).toLocaleString(undefined, {
-          weekday: 'short',
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-        }),
-        venue: `${event.venue.name} — ${event.venue.location}`,
-        lowestPrice: event.lowestPrice ?? null
-      }));
+      const formatted = (data.results || []).map((event) => {
+        console.log('🧪 FULL EVENT:', event);
+
+        const rawDate = event.date;
+        const locationKey = event.venue?.location;
+        let timeZone = event.venue?.time_zone ?? fallbackZones[locationKey];
+
+        // Validate IANA time zone
+        if (!isValidIANAZone(timeZone)) {
+          console.warn('⚠️ Invalid or missing time zone for event:', event.name, '→', timeZone);
+          timeZone = 'America/New_York'; // Default fallback
+        }
+
+        let formattedDate = 'TBD';
+        if (rawDate && timeZone) {
+          try {
+            formattedDate = new Date(rawDate).toLocaleString('en-US', {
+              weekday: 'short',
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit',
+              timeZone,
+              timeZoneName: 'short',
+            });
+          } catch (err) {
+            console.error('🛑 Date formatting error:', err, rawDate, timeZone);
+          }
+        }
+
+        return {
+          id: event.event_id,
+          name: event.name,
+          date: formattedDate,
+          venue: `${event.venue.name} — ${event.venue.location}`,
+          lowestPrice: event.lowestPrice ?? null,
+        };
+      });
 
       if (pageToFetch === 1) {
         setEvents(formatted);
@@ -96,7 +144,9 @@ const EventsSearch = ({ teamName, startDate, endDate }) => {
             state={{ event }}
             className="inline-block mt-2 sm:mt-0 bg-[#fea709] hover:bg-[#e89c06] text-white text-sm font-semibold px-4 py-2 rounded shadow"
           >
-            {event.lowestPrice ? `Buy Tickets from $${event.lowestPrice.toFixed(2)}` : 'Buy Tickets'}
+            {event.lowestPrice
+              ? `Buy Tickets from $${event.lowestPrice.toFixed(2)}`
+              : 'Buy Tickets'}
           </Link>
         </div>
       ))}
