@@ -34,8 +34,7 @@ router.get('/api/events/search', async (req, res) => {
     const { team, start, end } = req.query;
     if (!team) return res.status(400).json({ error: 'Missing team parameter' });
 
-    const searchHost = 'api.sandbox.ticketevolution.com';
-
+const searchHost = (process.env.VICTORY_LIVE_BASE_URL || 'api.ticketevolution.com').replace(/^https?:\/\//, '');
     // 🔍 Load performers.json dynamically
     const jsonData = await fs.readFile('./src/performers.json', 'utf-8');
     const performerMap = JSON.parse(jsonData);
@@ -98,8 +97,7 @@ console.log(`❌ No performer ID found for "${input}"`);      return res.json({ 
 
     const enrichedEvents = await Promise.all(events.map(async (event) => {
       const eventId = event.id;
-      const listingsQuery = `event_id=${eventId}`;
-      const listingsSig = generateXSignature('GET', searchHost, listingsPath, listingsQuery);
+const listingsQuery = `event_id=${eventId}&include_tevo_section_mappings=true`;      const listingsSig = generateXSignature('GET', searchHost, listingsPath, listingsQuery);
 
       try {
         const listingsRes = await axios.get(`https://${searchHost}${listingsPath}?${listingsQuery}`, {
@@ -150,10 +148,10 @@ console.log(`❌ No performer ID found for "${input}"`);      return res.json({ 
   }
 });
 
-// ✅ Listings route (with broker info)
+// ✅ Listings route (raw ticketGroups for seat map)
 router.get('/api/events/:id/listings', async (req, res) => {
   const eventId = req.params.id;
-  const searchHost = 'api.sandbox.ticketevolution.com';
+  const searchHost = (process.env.VICTORY_LIVE_BASE_URL || 'api.ticketevolution.com').replace(/^https?:\/\//, '');
   const listingsPath = '/v9/listings';
   const listingsQuery = `event_id=${eventId}`;
   const fullUrl = `https://${searchHost}${listingsPath}?${listingsQuery}`;
@@ -172,29 +170,20 @@ router.get('/api/events/:id/listings', async (req, res) => {
     });
 
     const rawListings = listingsRes.data.listings ?? listingsRes.data.ticket_groups ?? [];
-    const listings = rawListings.map(l => ({
-      id: l.id,
-      price: Number(l.retail_price_inclusive ?? l.retail_price),
-      section: l.section,
-      row: l.row,
-      quantity: l.quantity,
-      url: l.url,
-      broker: l.brokerage?.name || l.office?.name || 'Unknown'
-    }));
 
-    console.log(`🎟️ Found ${listings.length} listings for event ${eventId}`);
-    res.json({ listings });
-
+    console.log(`🎟️ Found ${rawListings.length} listings for event ${eventId}`);
+    res.json({ listings: rawListings }); // ✅ Important: keep raw for seat map
   } catch (err) {
     console.error(`❌ Listings fetch failed for event ${eventId}:`, err.response?.data || err.message);
     res.status(500).json({ error: 'Failed to fetch ticket listings' });
   }
 });
+
+    
 // ✅ Full event details route
 router.get('/api/events/:id', async (req, res) => {
   const eventId = req.params.id;
-  const searchHost = 'api.sandbox.ticketevolution.com';
-  const eventPath = `/v9/events/${eventId}`;
+const searchHost = (process.env.VICTORY_LIVE_BASE_URL || 'api.ticketevolution.com').replace(/^https?:\/\//, '');  const eventPath = `/v9/events/${eventId}`;
   const eventSig = generateXSignature('GET', searchHost, eventPath);
 
   try {

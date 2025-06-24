@@ -20,7 +20,7 @@ const EventDetails = () => {
         const eventData = await eventRes.json();
         setEvent(eventData);
 
-        const ticketRes = await fetch(`/api/events/${id}/listings`);
+        const ticketRes = await fetch(`/api/events/${id}/listings?include_tevo_section_mappings=true`);
         const ticketData = await ticketRes.json();
         setTickets(ticketData.listings || []);
         setFilteredTickets(ticketData.listings || []);
@@ -36,21 +36,16 @@ const EventDetails = () => {
 
   const applyFilters = () => {
     let filtered = [...tickets];
+    filtered = filtered.filter(t => Number(t.quantity ?? 1) >= parseInt(minQuantity));
 
-    // 🧮 Filter by quantity first
-    filtered = filtered.filter(
-      (t) => Number(t.quantity ?? 1) >= parseInt(minQuantity)
-    );
-
-    // 💰 Then filter by price
     if (minPrice) {
-      filtered = filtered.filter(
-        (t) => Number(t.retail_price_inclusive ?? t.retail_price) >= parseFloat(minPrice)
+      filtered = filtered.filter(t =>
+        Number(t.retail_price_inclusive ?? t.retail_price ?? t.price ?? 0) >= parseFloat(minPrice)
       );
     }
     if (maxPrice) {
-      filtered = filtered.filter(
-        (t) => Number(t.retail_price_inclusive ?? t.retail_price) <= parseFloat(maxPrice)
+      filtered = filtered.filter(t =>
+        Number(t.retail_price_inclusive ?? t.retail_price ?? t.price ?? 0) <= parseFloat(maxPrice)
       );
     }
 
@@ -58,52 +53,51 @@ const EventDetails = () => {
   };
 
   const sortedTickets = [...filteredTickets].sort((a, b) => {
-    const priceA = Number(a.retail_price_inclusive ?? a.retail_price);
-    const priceB = Number(b.retail_price_inclusive ?? b.retail_price);
+    const priceA = Number(a.retail_price_inclusive ?? a.retail_price ?? a.price ?? 0);
+    const priceB = Number(b.retail_price_inclusive ?? b.retail_price ?? b.price ?? 0);
     const sectionA = a.section ?? '';
     const sectionB = b.section ?? '';
 
     switch (sortOption) {
-      case 'priceLow':
-        return priceA - priceB;
-      case 'priceHigh':
-        return priceB - priceA;
-      case 'sectionAZ':
-        return sectionA.localeCompare(sectionB);
-      case 'sectionZA':
-        return sectionB.localeCompare(sectionA);
-      default:
-        return 0;
+      case 'priceLow': return priceA - priceB;
+      case 'priceHigh': return priceB - priceA;
+      case 'sectionAZ': return sectionA.localeCompare(sectionB);
+      case 'sectionZA': return sectionB.localeCompare(sectionA);
+      default: return 0;
     }
   });
 
   if (loading) return <div className="text-center mt-10">Loading event...</div>;
   if (!event) return <div className="text-center mt-10">Event not found.</div>;
 
+  console.log('SeatMap configId:', event.configuration?.id);
+  console.log('SeatMap venueId:', event.venue?.id);
+
   return (
     <div className="max-w-screen-xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-1">{event.name}</h1>
+      <div className="flex justify-between items-center mb-1">
+        <h1 className="text-2xl font-bold">{event.name}</h1>
+        {event.id && (
+          <a
+            href={`https://checkout.seatsearchpro.com/events/${event.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-[#fea709] hover:bg-[#e89c06] text-white font-semibold px-4 py-2 rounded shadow"
+          >
+            View Tickets
+          </a>
+        )}
+      </div>
       <p className="text-gray-600 mb-6">
         {new Date(event.occurs_at).toLocaleString()} @ {event.venue?.name}, {event.venue?.location}
       </p>
 
       <div className="flex flex-col lg:flex-row gap-6">
-        {/* 🗺️ Seat Map on Left */}
-        <div className="lg:w-2/3 w-full border rounded shadow p-2">
-          {event.configuration?.id && event.venue?.id && (
-            <SeatMap
-              configurationId={event.configuration.id}
-              venueId={event.venue.id}
-              ticketGroups={tickets}
-            />
-          )}
-        </div>
-
-        {/* 🎟️ Tickets on Right */}
+        {/* 🎟️ Tickets on Left */}
         <div className="lg:w-1/3 w-full border rounded shadow p-4">
           <h2 className="text-xl font-semibold mb-4">Available Tickets</h2>
 
-          {/* 🔢 Quantity Filter */}
+          {/* Quantity Filter */}
           <div className="mb-4">
             <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">
               Number of Tickets:
@@ -122,7 +116,7 @@ const EventDetails = () => {
             </select>
           </div>
 
-          {/* 💰 Price Filter */}
+          {/* Price Filter */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">Filter by price:</label>
             <div className="flex gap-2 mb-2">
@@ -149,7 +143,7 @@ const EventDetails = () => {
             </button>
           </div>
 
-          {/* 🔽 Sorting */}
+          {/* Sort */}
           <div className="mb-4">
             <label htmlFor="sort" className="block text-sm font-medium text-gray-700 mb-1">
               Sort by:
@@ -167,31 +161,57 @@ const EventDetails = () => {
             </select>
           </div>
 
-          {/* 🎫 Ticket Listings */}
+          {/* Listings */}
           {sortedTickets.length === 0 ? (
             <p className="text-gray-500">No tickets match your filters.</p>
           ) : (
-         <ul className="space-y-3 overflow-y-auto max-h-[650px] pr-1">
-  {sortedTickets.map((ticket, index) => (
-    <li key={index} className="border rounded px-3 py-2 shadow-sm">
-      <div className="text-sm font-semibold text-gray-800">
-        {ticket.section} • Row {ticket.row}
-      </div>
-      <div className="text-blue-600 font-bold">
-        ${(ticket.retail_price_inclusive ?? ticket.retail_price).toFixed(2)}
-      </div>
-      <div className="text-xs text-gray-500">
-        {ticket.delivery_type || 'Resale Ticket'} • {ticket.quantity} Ticket
-        {ticket.quantity > 1 ? 's' : ''}
-      </div>
-      <div className="text-xs text-gray-400">
-        Broker: {ticket.broker ?? 'Unknown'}
-      </div>
-    </li>
-  ))}
-</ul>
+            <ul className="space-y-3 overflow-y-auto max-h-[650px] pr-1">
+              {sortedTickets.map((ticket, index) => {
+                const price = ticket.price ?? ticket.retail_price_inclusive ?? ticket.retail_price ?? 0;
+                return (
+                  <li key={index} className="border rounded px-3 py-2 shadow-sm">
+                    <div className="text-sm font-semibold text-gray-800">
+                      {ticket.section} • Row {ticket.row}
+                    </div>
+                    <div className="text-blue-600 font-bold">${Number(price).toFixed(2)}</div>
+                    <div className="text-xs text-gray-500">
+                      {ticket.delivery_type || 'Resale Ticket'} • {ticket.quantity} Ticket
+                      {ticket.quantity > 1 ? 's' : ''}
+                    </div>
+                    <div className="text-xs text-gray-400">
+                      Broker: {ticket.broker ?? 'Unknown'}
+                    </div>
+                    <a
+                      href={`https://checkout.seatsearchpro.com/listings/${ticket.id}/checkout`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block bg-[#fea709] hover:bg-[#e89c06] text-white font-semibold px-4 py-1 rounded shadow text-sm mt-2"
+                    >
+                      Buy Now
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
           )}
         </div>
+
+        {/* 🗺️ Seat Map on Right */}
+        <div className="lg:w-2/3 w-full border rounded shadow p-2">
+  {event.configuration?.id && event.venue?.id ? (
+    <div id="seat-map">
+      <SeatMap
+        configurationId={event.configuration.id}
+        venueId={event.venue.id}
+        ticketGroups={tickets}
+        showControls
+        showLegend
+      />
+    </div>
+  ) : (
+    <p className="text-gray-500">Seat map not available.</p>
+  )}
+</div>
       </div>
     </div>
   );

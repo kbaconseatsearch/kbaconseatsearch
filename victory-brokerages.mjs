@@ -9,8 +9,7 @@ const apiSecret = process.env.VICTORY_LIVE_SECRET;
 
 const method = 'GET';
 const query = 'page=1&per_page=1'; // ✅ sorted query params
-const endpointPath = 'api.sandbox.ticketevolution.com/v9/brokerages';
-const url = `https://${endpointPath}?${query}`;
+const endpointPath = `${(process.env.VICTORY_LIVE_BASE_URL || 'https://api.ticketevolution.com')}/v9/brokerages`;const url = `https://${endpointPath}?${query}`;
 const stringToSign = `${method} ${endpointPath}?${query}`;
 
 function generateVictorySignature(input, secret) {

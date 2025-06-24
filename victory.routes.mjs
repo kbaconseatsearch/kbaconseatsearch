@@ -10,8 +10,7 @@ const router = express.Router();
 
 const apiKey = process.env.VICTORY_LIVE_API_KEY;
 const apiSecret = process.env.VICTORY_LIVE_SECRET;
-const BASE_URL = 'https://api.sandbox.ticketevolution.com/v9';
-
+const searchHost = (process.env.VICTORY_LIVE_BASE_URL || 'api.ticketevolution.com').replace(/^https?:\/\//, '');
 // 🔐 Signature generator (used for endpoints that require it)
 function generateVictorySignature(stringToSign, secret) {
   return crypto.createHmac('sha256', secret).update(stringToSign).digest('base64');
@@ -22,8 +21,7 @@ router.get('/brokerages', async (req, res) => {
   try {
     const method = 'GET';
     const query = 'page=1&per_page=1';
-    const endpointPath = 'api.sandbox.ticketevolution.com/v9/brokerages';
-    const url = `https://${endpointPath}?${query}`;
+const endpointPath = `${(process.env.VICTORY_LIVE_BASE_URL || 'https://api.ticketevolution.com')}/v9/brokerages`;    const url = `https://${endpointPath}?${query}`;
     const stringToSign = `${method} ${endpointPath}?${query}`;
     const signature = generateVictorySignature(stringToSign, apiSecret);
 
@@ -55,8 +53,7 @@ router.get('/listings', async (req, res) => {
   try {
     const method = 'GET';
     const query = `event_id=${eventId}`;
-    const endpointPath = 'api.sandbox.ticketevolution.com/v9/listings';
-    const url = `https://${endpointPath}?${query}`;
+const endpointPath = `${(process.env.VICTORY_LIVE_BASE_URL || 'https://api.ticketevolution.com')}/v9/brokerages`;    const url = `https://${endpointPath}?${query}`;
     const stringToSign = `${method} ${endpointPath}?${query}`;
     const signature = generateVictorySignature(stringToSign, apiSecret);
 

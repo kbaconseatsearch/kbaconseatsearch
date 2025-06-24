@@ -6,6 +6,11 @@ import victoryRoutes from './victory.routes.mjs';
 
 dotenv.config();
 
+// 🔍 DEBUG ENV
+console.log('🔑 API Key:', process.env.VICTORY_LIVE_API_KEY);
+console.log('🔐 Secret:', process.env.VICTORY_LIVE_SECRET);
+console.log('🌐 Base URL:', process.env.VICTORY_LIVE_BASE_URL);
+
 const app = express();
 const PORT = 3001;
 

@@ -8,8 +8,7 @@ dotenv.config();
 
 const API_TOKEN = process.env.VICTORY_LIVE_API_KEY;
 const API_SECRET = process.env.VICTORY_LIVE_SECRET;
-const searchHost = 'api.sandbox.ticketevolution.com';
-const performersPath = path.resolve('./src/performers.json');
+const searchHost = (process.env.VICTORY_LIVE_BASE_URL || 'api.ticketevolution.com').replace(/^https?:\/\//, '');const performersPath = path.resolve('./src/performers.json');
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
