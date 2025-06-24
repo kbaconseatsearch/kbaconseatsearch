@@ -12,6 +12,7 @@ const EventDetails = () => {
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [minQuantity, setMinQuantity] = useState('1');
+  const [selectedSections, setSelectedSections] = useState([]);
 
   useEffect(() => {
     const fetchEventAndTickets = async () => {
@@ -35,22 +36,49 @@ const EventDetails = () => {
   }, [id]);
 
   const applyFilters = () => {
-    let filtered = [...tickets];
-    filtered = filtered.filter(t => Number(t.quantity ?? 1) >= parseInt(minQuantity));
+  let filtered = [...tickets];
 
-    if (minPrice) {
-      filtered = filtered.filter(t =>
-        Number(t.retail_price_inclusive ?? t.retail_price ?? t.price ?? 0) >= parseFloat(minPrice)
-      );
-    }
-    if (maxPrice) {
-      filtered = filtered.filter(t =>
-        Number(t.retail_price_inclusive ?? t.retail_price ?? t.price ?? 0) <= parseFloat(maxPrice)
-      );
-    }
+  const normalize = (str) => (str ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
-    setFilteredTickets(filtered);
-  };
+  if (selectedSections.length > 0) {
+   const normalizedSelected = selectedSections.map(normalize);
+
+filtered = filtered.filter((ticket) => {
+  const section = ticket.section ?? '';
+  const normalizedSection = normalize(section);
+  const match = normalizedSelected.some((sel) => sel.endsWith(normalizedSection));
+
+      console.log(`🧪 Section: "${section}" → "${normalizedSection}"`);
+      if (match) console.log(`✅ MATCH`);
+      else console.log(`❌ NO MATCH`);
+
+      return match;
+    });
+  }
+
+  // Quantity filter
+  filtered = filtered.filter(
+    (t) => Number(t.quantity ?? 1) >= parseInt(minQuantity)
+  );
+
+  // Price range filter
+  const getPrice = (t) =>
+    Number(t.retail_price_inclusive ?? t.retail_price ?? t.price ?? 0);
+
+  if (minPrice) {
+    filtered = filtered.filter((t) => getPrice(t) >= parseFloat(minPrice));
+  }
+
+  if (maxPrice) {
+    filtered = filtered.filter((t) => getPrice(t) <= parseFloat(maxPrice));
+  }
+
+  setFilteredTickets(filtered);
+};
+
+  useEffect(() => {
+    applyFilters();
+  }, [selectedSections, minPrice, maxPrice, minQuantity]);
 
   const sortedTickets = [...filteredTickets].sort((a, b) => {
     const priceA = Number(a.retail_price_inclusive ?? a.retail_price ?? a.price ?? 0);
@@ -101,17 +129,16 @@ const EventDetails = () => {
       </p>
 
       <div className="flex flex-col lg:flex-row gap-6">
-        {/* 🎟️ Tickets on Left */}
+        {/* 🎟️ Ticket Filter and List */}
         <div className="lg:w-1/3 w-full border rounded shadow p-4">
           <h2 className="text-xl font-semibold mb-4">Available Tickets</h2>
 
-          {/* Quantity Filter */}
+          {/* Quantity */}
           <div className="mb-4">
-            <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Number of Tickets:
             </label>
             <select
-              id="quantity"
               value={minQuantity}
               onChange={(e) => setMinQuantity(e.target.value)}
               className="w-full border border-gray-300 rounded px-2 py-1 shadow-sm"
@@ -124,7 +151,7 @@ const EventDetails = () => {
             </select>
           </div>
 
-          {/* Price Filter */}
+          {/* Price */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">Filter by price:</label>
             <div className="flex gap-2 mb-2">
@@ -153,11 +180,8 @@ const EventDetails = () => {
 
           {/* Sort */}
           <div className="mb-4">
-            <label htmlFor="sort" className="block text-sm font-medium text-gray-700 mb-1">
-              Sort by:
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Sort by:</label>
             <select
-              id="sort"
               value={sortOption}
               onChange={(e) => setSortOption(e.target.value)}
               className="w-full border border-gray-300 rounded px-2 py-1 shadow-sm"
@@ -169,7 +193,17 @@ const EventDetails = () => {
             </select>
           </div>
 
-          {/* Listings */}
+          {/* Clear Section Filter */}
+          {selectedSections.length > 0 && (
+            <button
+              onClick={() => setSelectedSections([])}
+              className="mt-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded shadow w-full"
+            >
+              Clear Section Filter
+            </button>
+          )}
+
+          {/* Tickets */}
           {sortedTickets.length === 0 ? (
             <p className="text-gray-500">No tickets match your filters.</p>
           ) : (
@@ -204,17 +238,22 @@ const EventDetails = () => {
           )}
         </div>
 
-        {/* 🗺️ Seat Map on Right */}
+        {/* 🗺️ Seat Map */}
         <div className="lg:w-2/3 w-full border rounded shadow p-2">
           {event.configuration?.id && event.venue?.id ? (
             <div id="seat-map">
               <SeatMap
-                configurationId={event.configuration.id}
-                venueId={event.venue.id}
-                ticketGroups={tickets}
-                showControls
-                showLegend
-              />
+  configurationId={event.configuration.id}
+  venueId={event.venue.id}
+  ticketGroups={tickets}
+  selectedSections={selectedSections}
+  onSectionSelect={(sections) => {
+    console.log('🧩 Section selected from map:', sections);
+    setSelectedSections(sections);
+  }}
+  showControls
+  showLegend
+/>
             </div>
           ) : (
             <p className="text-gray-500">Seat map not available.</p>
