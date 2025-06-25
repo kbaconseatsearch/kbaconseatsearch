@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import EventsSearch from './EventsSearch';
 
 const Homepage = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const today = new Date().toISOString().split('T')[0];
   const thirtyDaysLater = new Date();
   thirtyDaysLater.setDate(thirtyDaysLater.getDate() + 30);
@@ -11,6 +15,17 @@ const Homepage = () => {
   const [startDate, setStartDate] = useState(today);
   const [endDate, setEndDate] = useState(defaultEndDate);
   const [submittedSearch, setSubmittedSearch] = useState(null);
+
+  // 🔁 Restore previous search state if coming from EventDetails
+  useEffect(() => {
+    const { team, start, end } = location.state || {};
+    if (team && start && end) {
+      setTeamQuery(team);
+      setStartDate(start);
+      setEndDate(end);
+      setSubmittedSearch({ team, start, end });
+    }
+  }, [location.state]);
 
   const handleSearch = (e) => {
     e.preventDefault();

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const EventsSearch = ({ teamName, startDate, endDate }) => {
   const [events, setEvents] = useState([]);
@@ -17,7 +17,6 @@ const EventsSearch = ({ teamName, startDate, endDate }) => {
     'San Diego, CA': 'America/Los_Angeles',
     'Phoenix, AZ': 'America/Phoenix',
     'Miami, FL': 'America/New_York',
-    // Add more known fallback zones here as needed
   };
 
   const isValidIANAZone = (tz) => {
@@ -44,10 +43,9 @@ const EventsSearch = ({ teamName, startDate, endDate }) => {
         const locationKey = event.venue?.location;
         let timeZone = event.venue?.time_zone ?? fallbackZones[locationKey];
 
-        // Validate IANA time zone
         if (!isValidIANAZone(timeZone)) {
           console.warn('⚠️ Invalid or missing time zone for event:', event.name, '→', timeZone);
-          timeZone = 'America/New_York'; // Default fallback
+          timeZone = 'America/New_York';
         }
 
         let formattedDate = 'TBD';
@@ -96,7 +94,6 @@ const EventsSearch = ({ teamName, startDate, endDate }) => {
 
   useEffect(() => {
     if (!startDate || !endDate) return;
-
     setLoading(true);
     setPage(1);
     setHasMore(true);
@@ -141,7 +138,12 @@ const EventsSearch = ({ teamName, startDate, endDate }) => {
           </div>
           <Link
             to={`/event/${event.id}`}
-            state={{ event }}
+            state={{
+              event,
+              team: teamName,
+              startDate,
+              endDate,
+            }}
             className="inline-block mt-2 sm:mt-0 bg-[#fea709] hover:bg-[#e89c06] text-white text-sm font-semibold px-4 py-2 rounded shadow"
           >
             {event.lowestPrice

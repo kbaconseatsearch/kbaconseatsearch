@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import SeatMap from '../seatmaps-client/packages/seatmaps-client/src/components/SeatMap.tsx';
 import { mlbVenueTimezones } from '../tools/timezones';
 
 const EventDetails = () => {
   const { id } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [event, setEvent] = useState(null);
   const [tickets, setTickets] = useState([]);
   const [filteredTickets, setFilteredTickets] = useState([]);
@@ -111,9 +114,28 @@ filtered = filtered.filter((ticket) => {
 
   if (!event) return <div className="text-center mt-10">Event not found.</div>;
 
-  return (
-    <div className="max-w-screen-xl mx-auto p-4">
-      <div className="flex justify-between items-center mb-1">
+ return (
+  <div className="max-w-screen-xl mx-auto p-4">
+    <div className="flex justify-between items-center mb-1">
+      <button
+        onClick={() => {
+          const state = location.state;
+          if (state?.team && state?.startDate && state?.endDate) {
+            navigate('/', {
+              state: {
+                team: state.team,
+                start: state.startDate,
+                end: state.endDate
+              }
+            });
+          } else {
+            navigate(-1); // fallback to previous page if no search info
+          }
+        }}
+        className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded shadow"
+      >
+        ← Return to Search Results
+      </button>
         <h1 className="text-2xl font-bold">{event.name}</h1>
        
       </div>
