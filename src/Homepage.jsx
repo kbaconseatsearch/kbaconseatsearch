@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import EventsSearch from './EventsSearch';
 
+
 const Homepage = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -15,6 +16,20 @@ const Homepage = () => {
   const [startDate, setStartDate] = useState(today);
   const [endDate, setEndDate] = useState(defaultEndDate);
   const [submittedSearch, setSubmittedSearch] = useState(null);
+  // 🧭 Handle query params like /search?team=...&start=...&end=...
+useEffect(() => {
+  const params = new URLSearchParams(location.search);
+  const team = params.get('team');
+  const start = params.get('start');
+  const end = params.get('end');
+
+  if (team && start && end) {
+    setTeamQuery(team);
+    setStartDate(start);
+    setEndDate(end);
+    setSubmittedSearch({ team, start, end });
+  }
+}, [location.search]);
 
   // 🔁 Restore previous search state if coming from EventDetails
   useEffect(() => {

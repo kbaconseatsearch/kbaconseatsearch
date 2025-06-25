@@ -116,42 +116,44 @@ filtered = filtered.filter((ticket) => {
 
  return (
   <div className="max-w-screen-xl mx-auto p-4">
-    <div className="flex justify-between items-center mb-1">
-      <button
-        onClick={() => {
-          const state = location.state;
-          if (state?.team && state?.startDate && state?.endDate) {
-            navigate('/', {
-              state: {
-                team: state.team,
-                start: state.startDate,
-                end: state.endDate
-              }
-            });
-          } else {
-            navigate(-1); // fallback to previous page if no search info
-          }
-        }}
-        className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded shadow"
-      >
-        ← Return to Search Results
-      </button>
-        <h1 className="text-2xl font-bold">{event.name}</h1>
-       
-      </div>
-     <p className="text-gray-600 mb-6">
-  {(() => {
-    const rawDate = event.occurs_at_local ?? event.occurs_at;
-    const tz = event.venue?.time_zone ?? 'America/New_York';
-    return new Date(rawDate).toLocaleString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      timeZone: tz,
-      timeZoneName: 'short'
-    });
-  })()} @ {event.venue?.name}, {event.venue?.location}
-</p>
+   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+  <button
+    onClick={() => {
+      const state = location.state;
+      if (state?.team && state?.startDate && state?.endDate) {
+        navigate(
+          `/search?team=${encodeURIComponent(state.team)}&start=${state.startDate}&end=${state.endDate}`,
+          { state }
+        );
+      } else {
+        navigate(-1);
+      }
+    }}
+    className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded shadow text-sm w-fit"
+  >
+    ← Return to Search Results
+  </button>
 
+  <div className="mt-3 sm:mt-0 text-center sm:text-right">
+    <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{event.name}</h1>
+    <p className="text-sm text-gray-600">
+      {(() => {
+        const rawDate = event.occurs_at_local ?? event.occurs_at;
+        const tz = event.venue?.time_zone ?? 'America/New_York';
+        return new Date(rawDate).toLocaleString('en-US', {
+          weekday: 'short',
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          timeZone: tz,
+          timeZoneName: 'short'
+        });
+      })()} @ {event.venue?.name}, {event.venue?.location}
+    </p>
+  </div>
+</div>
       <div className="flex flex-col lg:flex-row gap-6">
         {/* 🎟️ Ticket Filter and List */}
         <div className="lg:w-1/3 w-full border rounded shadow p-4">

@@ -1,4 +1,3 @@
-// src/App.jsx
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Homepage from './Homepage';
@@ -10,6 +9,7 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Homepage />} />
+        <Route path="/search" element={<Homepage />} /> {/* ✅ Handles query-based searches */}
         <Route path="/event/:id" element={<EventDetails />} />
         <Route path="/performers/:slug" element={<PerformerPage />} />
       </Routes>
