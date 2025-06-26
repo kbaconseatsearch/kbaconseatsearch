@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 import EventsSearch from './EventsSearch';
+import Navbar from '../components/Navbar';
 
 const SearchResults = () => {
   const [searchParams] = useSearchParams();

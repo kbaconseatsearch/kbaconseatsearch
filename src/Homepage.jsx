@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import EventsSearch from './EventsSearch';
+import Navbar from './components/Navbar'; // ✅ ADD THIS LINE
+
 
 
 const Homepage = () => {
@@ -50,9 +52,9 @@ useEffect(() => {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      <nav className="bg-white p-6 shadow-md flex items-center border-b">
-        <img src="/logo.png" alt="SeatSearchPro Logo" className="h-16 ml-4" />
-      </nav>
+      <Navbar />
+  alt="SeatSearchPro Logo"
+  className="h-32 ml-8 mt-4 rounded-2xl"
 
       <div className="container mx-auto px-4">
         <form

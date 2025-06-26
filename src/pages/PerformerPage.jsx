@@ -1,6 +1,7 @@
 // src/pages/PerformerPage.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import Navbar from './components/Navbar';
 
 const PerformerPage = () => {
   const { slug } = useParams();
@@ -41,9 +42,10 @@ const PerformerPage = () => {
 
   if (loading) return <div className="p-4">Loading performer info...</div>;
   if (error) return <div className="p-4 text-red-600">{error}</div>;
-
+    
   return (
     <div className="p-6">
+
       <h1 className="text-3xl font-bold mb-4">{performer.name}</h1>
       <p className="mb-6">{performer.short_bio || 'No bio available.'}</p>
 
