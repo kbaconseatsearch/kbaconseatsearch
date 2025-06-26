@@ -42,8 +42,13 @@ const EventDetails = () => {
   const applyFilters = () => {
     let filtered = [...tickets];
 
-    const normalize = (str) => (str ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
-
+const normalize = (str) =>
+  (str ?? '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '')      // remove all non-alphanumerics
+    .replace(/^sec/, '')            // remove 'sec' prefix if it exists
+    .replace(/^section/, '');       // optional: remove 'section' if present
+    
   if (selectedSections.length > 0) {
   const normalize = (str) => (str ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
   const normalizedSelected = selectedSections.map(normalize);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
+import Navbar from './components/Navbar';
 
 
 const EventsSearch = ({ teamName, startDate, endDate }) => {
