@@ -53,8 +53,7 @@ useEffect(() => {
   return (
     <div className="bg-gray-100 min-h-screen">
       <Navbar />
-  alt="SeatSearchPro Logo"
-  className="h-32 ml-8 mt-4 rounded-2xl"
+ 
 
       <div className="container mx-auto px-4">
         <form

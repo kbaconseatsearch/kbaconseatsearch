@@ -2,6 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 
+const getSportFromTeam = (team) => {
+  const sportMap = {
+    mlb: ['dodgers', 'giants', 'yankees', 'padres', 'phillies', 'red sox'],
+    nba: ['lakers', 'warriors', 'celtics', 'suns'],
+    nfl: ['rams', 'cowboys', 'packers', 'chargers', 'raiders'],
+    nhl: ['kings', 'bruins', 'rangers', 'sharks'],
+  };
+
+  const t = team?.toLowerCase();
+  for (const sport in sportMap) {
+    if (sportMap[sport].includes(t)) return sport;
+  }
+  return 'default';
+};
 
 const EventsSearch = ({ teamName, startDate, endDate }) => {
   const [events, setEvents] = useState([]);
@@ -39,14 +53,11 @@ const EventsSearch = ({ teamName, startDate, endDate }) => {
       const data = await response.json();
 
       const formatted = (data.results || []).map((event) => {
-        console.log('🧪 FULL EVENT:', event);
-
         const rawDate = event.date;
         const locationKey = event.venue?.location;
         let timeZone = event.venue?.time_zone ?? fallbackZones[locationKey];
 
         if (!isValidIANAZone(timeZone)) {
-          console.warn('⚠️ Invalid or missing time zone for event:', event.name, '→', timeZone);
           timeZone = 'America/New_York';
         }
 
@@ -102,12 +113,27 @@ const EventsSearch = ({ teamName, startDate, endDate }) => {
     fetchEvents(1);
   }, [teamName, startDate, endDate]);
 
-  const handleLoadMore = () => {
-    const nextPage = page + 1;
-    setIsLoadingMore(true);
-    setPage(nextPage);
-    fetchEvents(nextPage);
-  };
+  // 🔁 Infinite Scroll Hook
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >= document.body.offsetHeight - 400 &&
+        !isLoadingMore &&
+        hasMore
+      ) {
+        const nextPage = page + 1;
+        setIsLoadingMore(true);
+        setPage(nextPage);
+        fetchEvents(nextPage);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isLoadingMore, hasMore, page, teamName, startDate, endDate]);
+
+  const sport = getSportFromTeam(teamName);
+  const backgroundImage = sport !== 'default' ? `/backgrounds/${sport}-bg.png` : '';
 
   if (loading) {
     return (
@@ -126,7 +152,15 @@ const EventsSearch = ({ teamName, startDate, endDate }) => {
   }
 
   return (
-    <div className="mt-8 space-y-4">
+    <div
+      className="mt-8 space-y-4 bg-cover bg-center bg-no-repeat rounded-xl p-4"
+      style={{
+        backgroundImage: backgroundImage ? `url(${backgroundImage})` : undefined,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backdropFilter: 'blur(6px)',
+      }}
+    >
       {events.map((event) => (
         <div
           key={event.id}
@@ -155,24 +189,15 @@ const EventsSearch = ({ teamName, startDate, endDate }) => {
         </div>
       ))}
 
-      {hasMore && (
-        <div className="text-center mt-6">
-          <button
-            onClick={handleLoadMore}
-            disabled={isLoadingMore}
-            className="bg-[#fea709] hover:bg-[#e89c06] text-white font-semibold px-6 py-3 rounded shadow flex items-center justify-center gap-2"
-          >
-            {isLoadingMore && (
-              <img
-                src="/logos/seatsearchpro-logo-no-writing.png"
-                alt="Loading more"
-                className="w-5 h-5 animate-spin-slow"
-              />
-            )}
-            {isLoadingMore ? 'Loading More...' : 'Load More Events'}
-          </button>
-        </div>
-      )}
+      {isLoadingMore && (
+  <div className="flex justify-center items-center mt-6">
+    <img
+      src="/logos/seatsearchpro-logo-no-writing.png"
+      alt="Loading more"
+      className="w-12 h-12 animate-spin-slow rounded-xl"
+    />
+  </div>
+)}
     </div>
   );
 };

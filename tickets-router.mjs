@@ -155,8 +155,7 @@ router.get('/api/events/:id/listings', async (req, res) => {
   const eventId = req.params.id;
   const searchHost = (process.env.VICTORY_LIVE_BASE_URL || 'api.ticketevolution.com').replace(/^https?:\/\//, '');
   const listingsPath = '/v9/listings';
-  const listingsQuery = `event_id=${eventId}`;
-  const fullUrl = `https://${searchHost}${listingsPath}?${listingsQuery}`;
+const listingsQuery = `event_id=${eventId}`;  const fullUrl = `https://${searchHost}${listingsPath}?${listingsQuery}`;
   const sig = generateXSignature('GET', searchHost, listingsPath, listingsQuery);
 
   console.log(`🔍 Trying: ${fullUrl}`);
@@ -172,7 +171,7 @@ router.get('/api/events/:id/listings', async (req, res) => {
     });
 
     const rawListings = listingsRes.data.listings ?? listingsRes.data.ticket_groups ?? [];
-
+console.log(rawListings[0]); // 👈 check if brokerage_id is present
     console.log(`🎟️ Found ${rawListings.length} listings for event ${eventId}`);
     res.json({ listings: rawListings }); // ✅ Important: keep raw for seat map
   } catch (err) {
@@ -202,6 +201,36 @@ const searchHost = (process.env.VICTORY_LIVE_BASE_URL || 'api.ticketevolution.co
   } catch (err) {
     console.error(`❌ Failed to fetch event ${eventId}:`, err.response?.data || err.message);
     res.status(500).json({ error: 'Failed to fetch event details' });
+  }
+});
+
+// ✅ Basic route to return brokerage ID → name map
+router.get('/api/brokerages', async (req, res) => {
+  const searchHost = (process.env.VICTORY_LIVE_BASE_URL || 'api.ticketevolution.com')
+    .replace(/^https?:\/\//, '');
+
+  const path = '/v9/brokerages';
+  const sig = generateXSignature('GET', searchHost, path);
+  const fullUrl = `https://${searchHost}${path}?per_page=100`;
+
+  try {
+    const brokerRes = await axios.get(fullUrl, {
+      headers: {
+        'X-Token': VICTORY_API_TOKEN,
+        'X-Signature': sig,
+        'Accept': 'application/json',
+      }
+    });
+
+    const brokerages = brokerRes.data.brokerages?.map(b => ({
+      id: b.id,
+      name: b.name,
+    })) || [];
+
+    res.json({ brokerages });
+  } catch (err) {
+    console.error('❌ Failed to fetch brokerages:', err.message);
+    res.status(500).json({ error: 'Failed to fetch brokerages' });
   }
 });
 
