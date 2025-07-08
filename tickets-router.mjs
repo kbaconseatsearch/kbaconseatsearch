@@ -37,15 +37,15 @@ router.get('/api/events/search', async (req, res) => {
 const searchHost = (process.env.VICTORY_LIVE_BASE_URL || 'api.ticketevolution.com').replace(/^https?:\/\//, '');
     // 🔍 Load performers.json dynamically
     const jsonData = await fs.readFile('./src/performers.json', 'utf-8');
-    const performerMap = JSON.parse(jsonData);
+const performerMap = JSON.parse(jsonData);
 
 // Flatten the performer map for direct lookup
 const flatMap = {};
-for (const league of Object.keys(performerMap)) {
-  Object.entries(performerMap[league]).forEach(([name, id]) => {
-    flatMap[name.toLowerCase()] = id;
-  });
-}
+Object.entries(performerMap).forEach(([key, data]) => {
+  flatMap[key.toLowerCase()] = data.id;
+  if (data.slug) flatMap[data.slug.toLowerCase()] = data.id;
+  if (data.name) flatMap[data.name.toLowerCase()] = data.id;
+});
 
 const input = team.toLowerCase();
 let performerId = flatMap[input] ?? null;
@@ -60,9 +60,10 @@ if (!performerId) {
   }
 }
 
-    if (!performerId) {
-console.log(`❌ No performer ID found for "${input}"`);      return res.json({ results: [] });
-    }
+if (!performerId) {
+  console.log(`❌ No performer ID found for "${input}"`);
+  return res.json({ results: [] });
+}
 
     // Step 2: Search Events
     const eventPath = '/v9/events/search';
@@ -96,8 +97,9 @@ console.log(`❌ No performer ID found for "${input}"`);      return res.json({ 
     const listingsPath = '/v9/listings';
 
     const enrichedEvents = await Promise.all(events.map(async (event) => {
-      const eventId = event.id;
-const listingsQuery = `event_id=${eventId}&include_tevo_section_mappings=true`;      const listingsSig = generateXSignature('GET', searchHost, listingsPath, listingsQuery);
+      const eventId = event.id;    
+      const listingsQuery = `event_id=${eventId}`;
+      const listingsSig = generateXSignature('GET', searchHost, listingsPath, listingsQuery);
 
       try {
         const listingsRes = await axios.get(`https://${searchHost}${listingsPath}?${listingsQuery}`, {
@@ -109,22 +111,24 @@ const listingsQuery = `event_id=${eventId}&include_tevo_section_mappings=true`; 
         });
 
         const listings = listingsRes.data.listings ?? listingsRes.data.ticket_groups ?? [];
+        const firstUrl = listings.find(l => l.url)?.url || null;
         const prices = listings
           .map(l => Number(l.retail_price_inclusive ?? l.retail_price))
           .filter(p => !isNaN(p) && p > 0);
 
         return {
-          event_id: eventId,
-          name: event.name,
-          date: event.occurs_at_local ?? event.occurs_at,
-          venue: {
-  name: event.venue?.name ?? '',
-  location: event.venue?.location ?? '',
-  time_zone: event.venue?.time_zone ?? null,
-},
-          configuration: event.configuration,
-          lowestPrice: prices.length ? Math.min(...prices) : null
-        };
+  event_id: eventId,
+  name: event.name,
+  date: event.occurs_at_local ?? event.occurs_at,
+  venue: {
+    name: event.venue?.name ?? '',
+    location: event.venue?.location ?? '',
+    time_zone: event.venue?.time_zone ?? null,
+  },
+  configuration: event.configuration,
+  lowestPrice: prices.length ? Math.min(...prices).toFixed(2) : null,  // ← Add .toFixed(2) for consistency
+  url: firstUrl  // ← Comma was missing before this
+};
       } catch (err) {
         console.warn(`⚠️ No listings for event ${eventId}: ${err.message}`);
         return {

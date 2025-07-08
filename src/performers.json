@@ -1,133 +1,483 @@
 {
-  "mlb": {
-    "arizona diamondbacks": 15556,
-    "atlanta braves": 15545,
-    "baltimore orioles": 16425,
-    "boston red sox": 15532,
-    "chicago cubs": 15550,
-    "chicago white sox": 15536,
-    "cincinnati reds": 15551,
-    "cleveland guardians": 15537,
-    "colorado rockies": 15557,
-    "detroit tigers": 15538,
-    "houston astros": 15552,
-    "kansas city royals": 15539,
-    "los angeles angels": 15541,
-    "los angeles dodgers": 15558,
-    "miami marlins": 15546,
-    "milwaukee brewers": 15553,
-    "minnesota twins": 15540,
-    "new york mets": 15547,
-    "new york yankees": 15533,
-    "oakland athletics": 15542,
-    "philadelphia phillies": 15548,
-    "pittsburgh pirates": 15554,
-    "san diego padres": 15559,
-    "san francisco giants": 15560,
-    "seattle mariners": 15543,
-    "st. louis cardinals": 15555,
-    "tampa bay rays": 15534,
-    "texas rangers": 15544,
-    "toronto blue jays": 15535,
-    "washington nationals": 15549
+  "diamondbacks": {
+    "id": 15556,
+    "name": "Arizona Diamondbacks",
+    "slug": "diamondbacks",
+    "sport": "mlb",
+    "venue": "Chase Field",
+    "address": "401 E Jefferson St, Phoenix, AZ 85004"
   },
-  "nba": {
-    "atlanta hawks": 16311,
-    "boston celtics": 16301,
-    "brooklyn nets": 16302,
-    "charlotte hornets": 16312,
-    "chicago bulls": 16306,
-    "cleveland cavaliers": 16307,
-    "dallas mavericks": 16317,
-    "denver nuggets": 16322,
-    "detroit pistons": 16308,
-    "golden state warriors": 16326,
-    "houston rockets": 16318,
-    "indiana pacers": 16309,
-    "los angeles clippers": 16327,
-    "los angeles lakers": 16328,
-    "memphis grizzlies": 16319,
-    "miami heat": 16313,
-    "milwaukee bucks": 16310,
-    "minnesota timberwolves": 16323,
-    "new orleans pelicans": 16320,
-    "new york knicks": 16303,
-    "oklahoma city thunder": 16316,
-    "orlando magic": 16314,
-    "philadelphia 76ers": 16304,
-    "phoenix suns": 16329,
-    "portland trail blazers": 16324,
-    "sacramento kings": 16330,
-    "san antonio spurs": 16321,
-    "toronto raptors": 16305,
-    "utah jazz": 16325,
-    "washington wizards": 16315
+  "braves": {
+    "id": 15545,
+    "name": "Atlanta Braves",
+    "slug": "braves",
+    "sport": "mlb",
+    "venue": "Truist Park",
+    "address": "755 Battery Ave SE, Atlanta, GA 30339"
   },
-  "nfl": {
-    "arizona cardinals": 15674,
-    "atlanta falcons": 15670,
-    "baltimore ravens": 15650,
-    "buffalo bills": 15646,
-    "carolina panthers": 15671,
-    "chicago bears": 15666,
-    "cincinnati bengals": 15651,
-    "cleveland browns": 15652,
-    "dallas cowboys": 15662,
-    "denver broncos": 15658,
-    "detroit lions": 15667,
-    "green bay packers": 15668,
-    "houston texans": 15654,
-    "indianapolis colts": 15655,
-    "jacksonville jaguars": 15656,
-    "kansas city chiefs": 15659,
-    "las vegas raiders": 15660,
-    "los angeles chargers": 15661,
-    "los angeles rams": 29838,
-    "miami dolphins": 15647,
-    "minnesota vikings": 15669,
-    "new england patriots": 15648,
-    "new orleans saints": 15672,
-    "new york giants": 15663,
-    "new york jets": 15649,
-    "philadelphia eagles": 15664,
-    "pittsburgh steelers": 15653,
-    "san francisco 49ers": 15675,
-    "seattle seahawks": 15676,
-    "tampa bay buccaneers": 15673,
-    "tennessee titans": 15657,
-    "washington commanders": 15665
+  "orioles": {
+    "id": 16425,
+    "name": "Baltimore Orioles",
+    "slug": "orioles",
+    "sport": "mlb",
+    "venue": "Oriole Park at Camden Yards",
+    "address": "333 W Camden St, Baltimore, MD 21201"
   },
-  "nhl": {
-    "anaheim ducks": 16420,
-    "arizona coyotes": 16423,
-    "boston bruins": 16400,
-    "buffalo sabres": 16401,
-    "calgary flames": 16415,
-    "carolina hurricanes": 16406,
-    "chicago blackhawks": 16410,
-    "colorado avalanche": 16416,
-    "columbus blue jackets": 16411,
-    "dallas stars": 16421,
-    "detroit red wings": 16412,
-    "edmonton oilers": 16417,
-    "florida panthers": 16407,
-    "los angeles kings": 16422,
-    "minnesota wild": 16418,
-    "montréal canadiens": null,
-    "nashville predators": 16413,
-    "new jersey devils": 16395,
-    "new york islanders": 16396,
-    "new york rangers": 16397,
-    "ottawa senators": 16403,
-    "philadelphia flyers": 16398,
-    "pittsburgh penguins": 16399,
-    "san jose sharks": 16424,
-    "st. louis blues": 16414,
-    "tampa bay lightning": 16408,
-    "toronto maple leafs": 16404,
-    "vancouver canucks": 16419,
-    "vegas golden knights": 53553,
-    "washington capitals": 16409,
-    "winnipeg jets": 22681
+  "redsox": {
+    "id": 15532,
+    "name": "Boston Red Sox",
+    "slug": "redsox",
+    "sport": "mlb",
+    "venue": "Fenway Park",
+    "address": "4 Jersey St, Boston, MA 02215"
+  },
+  "cubs": {
+    "id": 15550,
+    "name": "Chicago Cubs",
+    "slug": "cubs",
+    "sport": "mlb",
+    "venue": "Wrigley Field",
+    "address": "1060 W Addison St, Chicago, IL 60613"
+  },
+  "whitesox": {
+    "id": 15536,
+    "name": "Chicago White Sox",
+    "slug": "whitesox",
+    "sport": "mlb",
+    "venue": "Guaranteed Rate Field",
+    "address": "333 W 35th St, Chicago, IL 60616"
+  },
+  "reds": {
+    "id": 15551,
+    "name": "Cincinnati Reds",
+    "slug": "reds",
+    "sport": "mlb",
+    "venue": "Great American Ball Park",
+    "address": "100 Joe Nuxhall Way, Cincinnati, OH 45202"
+  },
+  "guardians": {
+    "id": 15537,
+    "name": "Cleveland Guardians",
+    "slug": "guardians",
+    "sport": "mlb",
+    "venue": "Progressive Field",
+    "address": "2401 Ontario St, Cleveland, OH 44115"
+  },
+  "rockies": {
+    "id": 15557,
+    "name": "Colorado Rockies",
+    "slug": "rockies",
+    "sport": "mlb",
+    "venue": "Coors Field",
+    "address": "2001 Blake St, Denver, CO 80205"
+  },
+  "tigers": {
+    "id": 15538,
+    "name": "Detroit Tigers",
+    "slug": "tigers",
+    "sport": "mlb",
+    "venue": "Comerica Park",
+    "address": "2100 Woodward Ave, Detroit, MI 48201"
+  },
+  "astros": {
+    "id": 15552,
+    "name": "Houston Astros",
+    "slug": "astros",
+    "sport": "mlb",
+    "venue": "Minute Maid Park",
+    "address": "501 Crawford St, Houston, TX 77002"
+  },
+  "royals": {
+    "id": 15539,
+    "name": "Kansas City Royals",
+    "slug": "royals",
+    "sport": "mlb",
+    "venue": "Kauffman Stadium",
+    "address": "1 Royal Way, Kansas City, MO 64129"
+  },
+  "angels": {
+    "id": 15541,
+    "name": "Los Angeles Angels",
+    "slug": "angels",
+    "sport": "mlb",
+    "venue": "Angel Stadium",
+    "address": "2000 E Gene Autry Way, Anaheim, CA 92806"
+  },
+  "dodgers": {
+    "id": 15558,
+    "name": "Los Angeles Dodgers",
+    "slug": "dodgers",
+    "sport": "mlb",
+    "venue": "Dodger Stadium",
+    "address": "1000 Vin Scully Ave, Los Angeles, CA 90012"
+  },
+  "marlins": {
+    "id": 15546,
+    "name": "Miami Marlins",
+    "slug": "marlins",
+    "sport": "mlb",
+    "venue": "loanDepot park",
+    "address": "501 Marlins Way, Miami, FL 33125"
+  },
+  "brewers": {
+    "id": 15553,
+    "name": "Milwaukee Brewers",
+    "slug": "brewers",
+    "sport": "mlb",
+    "venue": "American Family Field",
+    "address": "1 Brewers Way, Milwaukee, WI 53214"
+  },
+  "twins": {
+    "id": 15540,
+    "name": "Minnesota Twins",
+    "slug": "twins",
+    "sport": "mlb",
+    "venue": "Target Field",
+    "address": "1 Twins Way, Minneapolis, MN 55403"
+  },
+  "mets": {
+    "id": 15547,
+    "name": "New York Mets",
+    "slug": "mets",
+    "sport": "mlb",
+    "venue": "Citi Field",
+    "address": "41 Seaver Way, Queens, NY 11368"
+  },
+  "yankees": {
+    "id": 15533,
+    "name": "New York Yankees",
+    "slug": "yankees",
+    "sport": "mlb",
+    "venue": "Yankee Stadium",
+    "address": "1 E 161 St, Bronx, NY 10451"
+  },
+  "athletics": {
+    "id": 15542,
+    "name": "Oakland Athletics",
+    "slug": "athletics",
+    "sport": "mlb",
+    "venue": "Oakland Coliseum",
+    "address": "7000 Coliseum Way, Oakland, CA 94621"
+  },
+  "phillies": {
+    "id": 15548,
+    "name": "Philadelphia Phillies",
+    "slug": "phillies",
+    "sport": "mlb",
+    "venue": "Citizens Bank Park",
+    "address": "1 Citizens Bank Way, Philadelphia, PA 19148"
+  },
+  "pirates": {
+    "id": 15554,
+    "name": "Pittsburgh Pirates",
+    "slug": "pirates",
+    "sport": "mlb",
+    "venue": "PNC Park",
+    "address": "115 Federal St, Pittsburgh, PA 15212"
+  },
+  "padres": {
+    "id": 15559,
+    "name": "San Diego Padres",
+    "slug": "padres",
+    "sport": "mlb",
+    "venue": "Petco Park",
+    "address": "100 Park Blvd, San Diego, CA 92101"
+  },
+  "giants": {
+    "id": 15560,
+    "name": "San Francisco Giants",
+    "slug": "giants",
+    "sport": "mlb",
+    "venue": "Oracle Park",
+    "address": "24 Willie Mays Plaza, San Francisco, CA 94107"
+  },
+  "mariners": {
+    "id": 15543,
+    "name": "Seattle Mariners",
+    "slug": "mariners",
+    "sport": "mlb",
+    "venue": "T-Mobile Park",
+    "address": "1250 1st Ave S, Seattle, WA 98134"
+  },
+  "cardinals": {
+    "id": 15555,
+    "name": "St. Louis Cardinals",
+    "slug": "cardinals",
+    "sport": "mlb",
+    "venue": "Busch Stadium",
+    "address": "700 Clark Ave, St. Louis, MO 63102"
+  },
+  "rays": {
+    "id": 15534,
+    "name": "Tampa Bay Rays",
+    "slug": "rays",
+    "sport": "mlb",
+    "venue": "Tropicana Field",
+    "address": "1 Tropicana Dr, St. Petersburg, FL 33705"
+  },
+  "rangers": {
+    "id": 15544,
+    "name": "Texas Rangers",
+    "slug": "rangers",
+    "sport": "mlb",
+    "venue": "Globe Life Field",
+    "address": "734 Stadium Dr, Arlington, TX 76011"
+  },
+  "bluejays": {
+    "id": 15535,
+    "name": "Toronto Blue Jays",
+    "slug": "bluejays",
+    "sport": "mlb",
+    "venue": "Rogers Centre",
+    "address": "1 Blue Jays Way, Toronto, ON M5V 1J1, Canada"
+  },
+  "nationals": {
+    "id": 15549,
+    "name": "Washington Nationals",
+    "slug": "nationals",
+    "sport": "mlb",
+    "venue": "Nationals Park",
+    "address": "1500 S Capitol St SE, Washington, DC 20003"
+  },
+  
+  "hawks": {
+    "slug": "hawks",
+    "name": "Atlanta Hawks",
+    "sport": "nba",
+    "venue": "State Farm Arena",
+    "address": "1 State Farm Dr, Atlanta, GA 30303",
+    "id": 14134
+  },
+  "celtics": {
+    "slug": "celtics",
+    "name": "Boston Celtics",
+    "sport": "nba",
+    "venue": "TD Garden",
+    "address": "100 Legends Way, Boston, MA 02114",
+    "id": 14135
+  },
+  "nets": {
+    "slug": "nets",
+    "name": "Brooklyn Nets",
+    "sport": "nba",
+    "venue": "Barclays Center",
+    "address": "620 Atlantic Ave, Brooklyn, NY 11217",
+    "id": 14136
+  },
+  "hornets": {
+    "slug": "hornets",
+    "name": "Charlotte Hornets",
+    "sport": "nba",
+    "venue": "Spectrum Center",
+    "address": "333 E Trade St, Charlotte, NC 28202",
+    "id": 14137
+  },
+  "bulls": {
+    "slug": "bulls",
+    "name": "Chicago Bulls",
+    "sport": "nba",
+    "venue": "United Center",
+    "address": "1901 W Madison St, Chicago, IL 60612",
+    "id": 14138
+  },
+  "cavaliers": {
+    "slug": "cavaliers",
+    "name": "Cleveland Cavaliers",
+    "sport": "nba",
+    "venue": "Rocket Mortgage FieldHouse",
+    "address": "1 Center Ct, Cleveland, OH 44115",
+    "id": 14139
+  },
+  "mavericks": {
+    "slug": "mavericks",
+    "name": "Dallas Mavericks",
+    "sport": "nba",
+    "venue": "American Airlines Center",
+    "address": "2500 Victory Ave, Dallas, TX 75219",
+    "id": 14140
+  },
+  "nuggets": {
+    "slug": "nuggets",
+    "name": "Denver Nuggets",
+    "sport": "nba",
+    "venue": "Ball Arena",
+    "address": "1000 Chopper Cir, Denver, CO 80204",
+    "id": 14141
+  },
+  "pistons": {
+    "slug": "pistons",
+    "name": "Detroit Pistons",
+    "sport": "nba",
+    "venue": "Little Caesars Arena",
+    "address": "2645 Woodward Ave, Detroit, MI 48201",
+    "id": 14142
+  },
+  "warriors": {
+    "slug": "warriors",
+    "name": "Golden State Warriors",
+    "sport": "nba",
+    "venue": "Chase Center",
+    "address": "1 Warriors Way, San Francisco, CA 94158",
+    "id": 14143
+  },
+  "rockets": {
+    "slug": "rockets",
+    "name": "Houston Rockets",
+    "sport": "nba",
+    "venue": "Toyota Center",
+    "address": "1510 Polk St, Houston, TX 77002",
+    "id": 14144
+  },
+  "pacers": {
+    "slug": "pacers",
+    "name": "Indiana Pacers",
+    "sport": "nba",
+    "venue": "Gainbridge Fieldhouse",
+    "address": "125 S Pennsylvania St, Indianapolis, IN 46204",
+    "id": 14145
+  },
+  "clippers": {
+    "slug": "clippers",
+    "name": "LA Clippers",
+    "sport": "nba",
+    "venue": "Crypto.com Arena",
+    "address": "1111 S Figueroa St, Los Angeles, CA 90015",
+    "id": 14146
+  },
+  "lakers": {
+    "slug": "lakers",
+    "name": "Los Angeles Lakers",
+    "sport": "nba",
+    "venue": "Crypto.com Arena",
+    "address": "1111 S Figueroa St, Los Angeles, CA 90015",
+    "id": 14147
+  },
+  "grizzlies": {
+    "slug": "grizzlies",
+    "name": "Memphis Grizzlies",
+    "sport": "nba",
+    "venue": "FedExForum",
+    "address": "191 Beale St, Memphis, TN 38103",
+    "id": 14148
+  },
+  "heat": {
+    "slug": "heat",
+    "name": "Miami Heat",
+    "sport": "nba",
+    "venue": "Kaseya Center",
+    "address": "601 Biscayne Blvd, Miami, FL 33132",
+    "id": 14149
+  },
+  "bucks": {
+    "slug": "bucks",
+    "name": "Milwaukee Bucks",
+    "sport": "nba",
+    "venue": "Fiserv Forum",
+    "address": "1111 Vel R. Phillips Ave, Milwaukee, WI 53203",
+    "id": 14150
+  },
+  "timberwolves": {
+    "slug": "timberwolves",
+    "name": "Minnesota Timberwolves",
+    "sport": "nba",
+    "venue": "Target Center",
+    "address": "600 N 1st Ave, Minneapolis, MN 55403",
+    "id": 14151
+  },
+  "pelicans": {
+    "slug": "pelicans",
+    "name": "New Orleans Pelicans",
+    "sport": "nba",
+    "venue": "Smoothie King Center",
+    "address": "1501 Dave Dixon Dr, New Orleans, LA 70113",
+    "id": 14152
+  },
+  "knicks": {
+    "slug": "knicks",
+    "name": "New York Knicks",
+    "sport": "nba",
+    "venue": "Madison Square Garden",
+    "address": "4 Pennsylvania Plaza, New York, NY 10001",
+    "id": 14153
+  },
+  "thunder": {
+    "slug": "thunder",
+    "name": "Oklahoma City Thunder",
+    "sport": "nba",
+    "venue": "Paycom Center",
+    "address": "100 W Reno Ave, Oklahoma City, OK 73102",
+    "id": 14154
+  },
+  "magic": {
+    "slug": "magic",
+    "name": "Orlando Magic",
+    "sport": "nba",
+    "venue": "Kia Center",
+    "address": "400 W Church St, Orlando, FL 32801",
+    "id": 14155
+  },
+  "76ers": {
+    "slug": "76ers",
+    "name": "Philadelphia 76ers",
+    "sport": "nba",
+    "venue": "Wells Fargo Center",
+    "address": "3601 S Broad St, Philadelphia, PA 19148",
+    "id": 14156
+  },
+  "suns": {
+    "slug": "suns",
+    "name": "Phoenix Suns",
+    "sport": "nba",
+    "venue": "Footprint Center",
+    "address": "201 E Jefferson St, Phoenix, AZ 85004",
+    "id": 14157
+  },
+  "blazers": {
+    "slug": "blazers",
+    "name": "Portland Trail Blazers",
+    "sport": "nba",
+    "venue": "Moda Center",
+    "address": "1 N Center Ct St, Portland, OR 97227",
+    "id": 14158
+  },
+  "kings": {
+    "slug": "kings",
+    "name": "Sacramento Kings",
+    "sport": "nba",
+    "venue": "Golden 1 Center",
+    "address": "500 David J Stern Walk, Sacramento, CA 95814",
+    "id": 14159
+  },
+  "spurs": {
+    "slug": "spurs",
+    "name": "San Antonio Spurs",
+    "sport": "nba",
+    "venue": "Frost Bank Center",
+    "address": "1 AT&T Center Parkway, San Antonio, TX 78219",
+    "id": 14160
+  },
+  "raptors": {
+    "slug": "raptors",
+    "name": "Toronto Raptors",
+    "sport": "nba",
+    "venue": "Scotiabank Arena",
+    "address": "40 Bay St, Toronto, ON M5J 2X2, Canada",
+    "id": 14161
+  },
+  "jazz": {
+    "slug": "jazz",
+    "name": "Utah Jazz",
+    "sport": "nba",
+    "venue": "Delta Center",
+    "address": "301 S Temple, Salt Lake City, UT 84101",
+    "id": 14162
+  },
+  "wizards": {
+    "slug": "wizards",
+    "name": "Washington Wizards",
+    "sport": "nba",
+    "venue": "Capital One Arena",
+    "address": "601 F St NW, Washington, DC 20004",
+    "id": 14163
   }
 }

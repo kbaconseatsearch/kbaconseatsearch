@@ -79,13 +79,15 @@ const EventsSearch = ({ teamName, startDate, endDate }) => {
           }
         }
 
-        return {
-          id: event.event_id,
-          name: event.name,
-          date: formattedDate,
-          venue: `${event.venue.name} — ${event.venue.location}`,
-          lowestPrice: event.lowestPrice ?? null,
-        };
+       return {
+  id: event.event_id,
+  name: event.name,
+  date: formattedDate,
+  venue: `${event.venue.name} — ${event.venue.location}`,
+ price: event.lowestPrice !== undefined && event.lowestPrice !== null
+  ? Number(event.lowestPrice)
+  : null, // backend sends this field correctly
+};
       });
 
       if (pageToFetch === 1) {
@@ -113,7 +115,6 @@ const EventsSearch = ({ teamName, startDate, endDate }) => {
     fetchEvents(1);
   }, [teamName, startDate, endDate]);
 
-  // 🔁 Infinite Scroll Hook
   useEffect(() => {
     const handleScroll = () => {
       if (
@@ -182,22 +183,22 @@ const EventsSearch = ({ teamName, startDate, endDate }) => {
             }}
             className="inline-block mt-2 sm:mt-0 bg-[#fea709] hover:bg-[#e89c06] text-white text-sm font-semibold px-4 py-2 rounded shadow"
           >
-            {event.lowestPrice
-              ? `Buy Tickets from $${event.lowestPrice.toFixed(2)}`
-              : 'Buy Tickets'}
+            {event.price !== null
+  ? `Buy Tickets from $${event.price.toFixed(2)}`
+  : 'Buy Tickets'}
           </Link>
         </div>
       ))}
 
       {isLoadingMore && (
-  <div className="flex justify-center items-center mt-6">
-    <img
-      src="/logos/seatsearchpro-logo-no-writing.png"
-      alt="Loading more"
-      className="w-12 h-12 animate-spin-slow rounded-xl"
-    />
-  </div>
-)}
+        <div className="flex justify-center items-center mt-6">
+          <img
+            src="/logos/seatsearchpro-logo-no-writing.png"
+            alt="Loading more"
+            className="w-12 h-12 animate-spin-slow rounded-xl"
+          />
+        </div>
+      )}
     </div>
   );
 };
