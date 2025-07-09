@@ -1,6 +1,6 @@
 // src/pages/PerformerPage.jsx
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom'; // ✅ added Link here
 import Navbar from '../components/Navbar';
 import performers from '../performers.json';
 
@@ -79,9 +79,9 @@ const PerformerPage = () => {
           ) : (
             <ul className="space-y-4">
               {events.map(event => {
-                const price = event.lowestPrice
-                  ? `$${parseFloat(event.lowestPrice).toFixed(2)}`
-                  : '—';
+                const price = event.retailMin != null
+  ? `$${parseFloat(event.retailMin).toFixed(2)}`
+  : null;
                 const date = new Date(event.occurs_at_local || event.occurs_at || event.date);
                 const dateStr = date.toLocaleString('en-US', {
                   weekday: 'long',
@@ -97,12 +97,14 @@ const PerformerPage = () => {
                   <li key={event.event_id || event.id} className="border bg-white p-4 rounded shadow">
                     <div className="font-medium text-lg">{event.name}</div>
                     <div className="text-sm text-gray-600 mb-2">{dateStr}</div>
-                    <a
-  href={`/event/${event.event_id}`}
+  <Link
+  to={`/event/${event.event_id}`}
   className="inline-block bg-[#fea709] hover:bg-[#e89c06] text-white font-semibold px-4 py-2 rounded shadow text-sm"
 >
-  Buy Tickets from ${event.lowestPrice || '—'}
-</a>
+  {event.lowestPrice !== null
+    ? `Tickets as low as $${parseFloat(event.lowestPrice).toFixed(2)}`
+    : 'View Tickets'}
+</Link>
                     
                   </li>
                 );

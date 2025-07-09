@@ -27,43 +27,43 @@ function generateXSignature(method, host, path, queryString = '') {
   return hmac.digest('base64');
 }
 
-
 // ✅ Search Events by Team (now uses performers.json for fast lookup)
 router.get('/api/events/search', async (req, res) => {
   try {
     const { team, start, end } = req.query;
     if (!team) return res.status(400).json({ error: 'Missing team parameter' });
 
-const searchHost = (process.env.VICTORY_LIVE_BASE_URL || 'api.ticketevolution.com').replace(/^https?:\/\//, '');
+    const searchHost = (process.env.VICTORY_LIVE_BASE_URL || 'api.ticketevolution.com').replace(/^https?:\/\//, '');
+
     // 🔍 Load performers.json dynamically
     const jsonData = await fs.readFile('./src/performers.json', 'utf-8');
-const performerMap = JSON.parse(jsonData);
+    const performerMap = JSON.parse(jsonData);
 
-// Flatten the performer map for direct lookup
-const flatMap = {};
-Object.entries(performerMap).forEach(([key, data]) => {
-  flatMap[key.toLowerCase()] = data.id;
-  if (data.slug) flatMap[data.slug.toLowerCase()] = data.id;
-  if (data.name) flatMap[data.name.toLowerCase()] = data.id;
-});
+    // Flatten the performer map for direct lookup
+    const flatMap = {};
+    Object.entries(performerMap).forEach(([key, data]) => {
+      flatMap[key.toLowerCase()] = data.id;
+      if (data.slug) flatMap[data.slug.toLowerCase()] = data.id;
+      if (data.name) flatMap[data.name.toLowerCase()] = data.id;
+    });
 
-const input = team.toLowerCase();
-let performerId = flatMap[input] ?? null;
+    const input = team.toLowerCase();
+    let performerId = flatMap[input] ?? null;
 
-// If no exact match, try fuzzy match
-if (!performerId) {
-  for (const [name, id] of Object.entries(flatMap)) {
-    if (name.includes(input)) {
-      performerId = id;
-      break;
+    // If no exact match, try fuzzy match
+    if (!performerId) {
+      for (const [name, id] of Object.entries(flatMap)) {
+        if (name.includes(input)) {
+          performerId = id;
+          break;
+        }
+      }
     }
-  }
-}
 
-if (!performerId) {
-  console.log(`❌ No performer ID found for "${input}"`);
-  return res.json({ results: [] });
-}
+    if (!performerId) {
+      console.log(`❌ No performer ID found for "${input}"`);
+      return res.json({ results: [] });
+    }
 
     // Step 2: Search Events
     const eventPath = '/v9/events/search';
@@ -93,58 +93,43 @@ if (!performerId) {
 
     const events = eventRes.data.events || [];
 
-    // Step 3: Add Listings Info (faster with Promise.all)
-    const listingsPath = '/v9/listings';
+// Step 3: Fetch Stats (for retail_price_min) and enrich each event
+const enrichedEvents = await Promise.all(events.map(async (event) => {
+  const statsPath = `/v9/events/${event.id}/stats`;
+  const statsQuery = 'inventory_type=event';
+  const statsSig = generateXSignature('GET', searchHost, statsPath, statsQuery);
 
-    const enrichedEvents = await Promise.all(events.map(async (event) => {
-      const eventId = event.id;    
-      const listingsQuery = `event_id=${eventId}`;
-      const listingsSig = generateXSignature('GET', searchHost, listingsPath, listingsQuery);
+  const fullStatsUrl = `https://${searchHost}${statsPath}?${statsQuery}`;
 
-      try {
-        const listingsRes = await axios.get(`https://${searchHost}${listingsPath}?${listingsQuery}`, {
-          headers: {
-            'X-Token': VICTORY_API_TOKEN,
-            'X-Signature': listingsSig,
-            'Accept': 'application/json',
-          }
-        });
-
-        const listings = listingsRes.data.listings ?? listingsRes.data.ticket_groups ?? [];
-        const firstUrl = listings.find(l => l.url)?.url || null;
-        const prices = listings
-          .map(l => Number(l.retail_price_inclusive ?? l.retail_price))
-          .filter(p => !isNaN(p) && p > 0);
-
-        return {
-  event_id: eventId,
-  name: event.name,
-  date: event.occurs_at_local ?? event.occurs_at,
-  venue: {
-    name: event.venue?.name ?? '',
-    location: event.venue?.location ?? '',
-    time_zone: event.venue?.time_zone ?? null,
-  },
-  configuration: event.configuration,
-  lowestPrice: prices.length ? Math.min(...prices).toFixed(2) : null,  // ← Add .toFixed(2) for consistency
-  url: firstUrl  // ← Comma was missing before this
-};
-      } catch (err) {
-        console.warn(`⚠️ No listings for event ${eventId}: ${err.message}`);
-        return {
-          event_id: eventId,
-          name: event.name,
-          date: event.occurs_at_local,
-          venue: {
-  name: event.venue?.name ?? '',
-  location: event.venue?.location ?? '',
-  time_zone: event.venue?.time_zone ?? null,
-},
-          configuration: event.configuration,
-          lowestPrice: null
-        };
+  let retailMin = null;
+  try {
+    const statsRes = await axios.get(fullStatsUrl, {
+      headers: {
+        'X-Token': VICTORY_API_TOKEN,
+        'X-Signature': statsSig,
+        'Accept': 'application/json',
       }
-    }));
+    });
+
+    retailMin = statsRes.data?.retail_price_min ?? null;
+  } catch (err) {
+    console.warn(`⚠️ No stats for event ${event.id}:`, err.message);
+  }
+
+  return {
+    event_id: event.id,
+    name: event.name,
+    date: event.occurs_at_local ?? event.occurs_at,
+    venue: {
+      name: event.venue?.name ?? '',
+      location: event.venue?.location ?? '',
+      time_zone: event.venue?.time_zone ?? null,
+    },
+    configuration: event.configuration,
+    lowestPrice: retailMin !== null ? Number(retailMin) : null,
+    url: null
+  };
+}));
 
     res.json({ results: enrichedEvents });
 
@@ -153,6 +138,7 @@ if (!performerId) {
     res.status(500).json({ error: 'API lookup failed' });
   }
 });
+
 
 // ✅ Listings route (raw ticketGroups for seat map)
 router.get('/api/events/:id/listings', async (req, res) => {

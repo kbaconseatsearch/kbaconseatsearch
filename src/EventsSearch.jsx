@@ -84,10 +84,7 @@ const EventsSearch = ({ teamName, startDate, endDate }) => {
   name: event.name,
   date: formattedDate,
   venue: `${event.venue.name} — ${event.venue.location}`,
- price: event.lowestPrice !== undefined && event.lowestPrice !== null
-  ? Number(event.lowestPrice)
-  : null, // backend sends this field correctly
-};
+price: event.lowestPrice != null ? Number(event.lowestPrice) : null,};
       });
 
       if (pageToFetch === 1) {
@@ -184,8 +181,8 @@ const EventsSearch = ({ teamName, startDate, endDate }) => {
             className="inline-block mt-2 sm:mt-0 bg-[#fea709] hover:bg-[#e89c06] text-white text-sm font-semibold px-4 py-2 rounded shadow"
           >
             {event.price !== null
-  ? `Buy Tickets from $${event.price.toFixed(2)}`
-  : 'Buy Tickets'}
+  ? `Tickets as low as $${event.price.toFixed(2)}`
+  : 'View Tickets'}
           </Link>
         </div>
       ))}
